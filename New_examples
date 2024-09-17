@@ -1,0 +1,16 @@
+Example Search:
+    - Taxi cab problem 
+    - Craft World  (https://github.com/jacobandreas/psketch/tree/master/models)
+
+
+
+Code debugging and improvement: 
+    - Increase the size of the neural network for DQN. Our reference paper uses three hidden layers with 1024
+      Relu units in each layer. Right now our size is 2 hidden layers with 128 Relu units. 
+    - Keeping epsilon constant than decay; The reference paper uses a constant epsilon (0.1) while we use 
+      exponential decay with min epsilon 0.1 . 
+    - Keeping a high learning rate; The learning rate of the reference paper is 0.5 while we use 0.1 as 
+      the learning rate. I am not sure if this is a good idea as it might cause the algorithm not to converge.
+    - Understanding why CRM does not work in the firefighter example. Changing the reward machine of the fire
+      fighter example so that the ordering of the objective is not in play. 
+    - Maybe adding reward shaping to the mix 
