@@ -7,7 +7,7 @@ from collections import namedtuple, deque
 Experience = namedtuple('Experience', ['state', 'action', 'reward','sampletime', 'next_state'])
 
 class Optimizer:
-    def __init__(self, policy_net, target_net, optimizer, memory, GAMMA=0.99, BATCH_SIZE=64, TAU=0.01):
+    def __init__(self, policy_net, target_net, optimizer, memory, GAMMA=0.99, BATCH_SIZE=64, TAU=0.01, device = 'cpu'):
         self.optimizer = optimizer
         self.memory = memory
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

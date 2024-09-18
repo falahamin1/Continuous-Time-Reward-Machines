@@ -29,7 +29,7 @@ class Comparison:
         self.batch_size = batch_size
         self.update_frequency = update_frequency
         self.save_file = save_file
-        self.ctrm, self.env_class = self.get_ctrm()
+        self.ctrm, self.env_class = self.get_ctrm_env()
         self.value = None
 
 #From the input name of environment, this function returns the CTRM and the environment classes 
@@ -64,26 +64,27 @@ class Comparison:
     def run_classic(self):
         DRL =  DeepRLClassic(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.max_episodes, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate)
-        results = DRL.doRLwithconvergence()
+        results = DRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes= self.max_episodes)
         return results
 
 
             
     
 
-    def run_counterfactual():
+    def run_counterfactual(self):
         CFDRL = DeepRLCounterFactual(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.max_episodes, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate)
-        results = CFDRL.doRLwithconvergence()
+        results = CFDRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes= self.max_episodes)
         return results
 
 
             
     def run_comparison(self):
+        print("In run comparison.")
         vi = ValueIteration(gamma = self.discount_factor, environment = self.env_class, ctrm = self.ctrm )
         Value = vi.doVI()
         self.value = Value
-        if self.specify_dimension == "yes":
+        if self.specify_dimension == "no":
             all_classic = []
             all_counter = []
             length_classic = 0
@@ -99,11 +100,11 @@ class Comparison:
             for sub_array in all_classic:
                 if len(sub_array) < length_classic:
         # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-                    sub_array.extend([sub_array[-1]] * (length - len(sub_array)) if sub_array else [0] * length)
+                    sub_array.extend([sub_array[-1]] * (length_classic - len(sub_array)) if sub_array else [0] * length)
             for sub_array in all_counter:
                 if len(sub_array) < length_counter:
         # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-                    sub_array.extend([sub_array[-1]] * (length - len(sub_array)) if sub_array else [0] * length)
+                    sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length)
             
 
             
@@ -128,12 +129,12 @@ class Comparison:
         plt.figure(figsize=(10, 6))
     
     # Plot for classic data
-        plt.plot(classic_50, color='orange', label='Classic (Median)')
-        plt.fill_between(range(classic_50.shape[0]), classic_25, classic_75, color='orange', alpha=0.3, label='Classic (25th-75th Percentile)')
+        plt.plot(range(classic_50.shape[0]) * self.update_frequency,classic_50, color='orange', label='Classic (Median)')
+        plt.fill_between(range(classic_50.shape[0]) * self.update_frequency, classic_25, classic_75, color='orange', alpha=0.3, label='Classic (25th-75th Percentile)')
     
     # Plot for counterfactual data
-        plt.plot(counter_50, color='blue', label='Counterfactual (Median)')
-        plt.fill_between(range(counter_50.shape[0]), counter_25, counter_75, color='blue', alpha=0.3, label='Counterfactual (25th-75th Percentile)')
+        plt.plot(range(counter_50.shape[0]) * self.update_frequency, counter_50, color='blue', label='Counterfactual (Median)')
+        plt.fill_between(range(counter_50.shape[0]) * self.update_frequency, counter_25, counter_75, color='blue', alpha=0.3, label='Counterfactual (25th-75th Percentile)')
     
     # Add labels and title
         plt.xlabel('Time Steps')
@@ -157,11 +158,11 @@ def main():
     parser = argparse.ArgumentParser(description="Comparison class input arguments")
 
     # Add arguments
-    parser.add_argument("--env", type=str, default="default_env", help="Environment name")
+    parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map)")
     parser.add_argument("--specify_dimension", type=str, choices=["yes", "no"], default="no", help="Specify dimensions (yes/no)")
     parser.add_argument("--rows", type=int, default=None, help="Number of rows if dimensions are specified")
     parser.add_argument("--columns", type=int, default=None, help="Number of columns if dimensions are specified")
-    parser.add_argument("--discount_factor", type=float, default=0.99, help="Discount factor for learning")
+    parser.add_argument("--discount_factor", type=float, default=0.0001, help="Discount factor for learning")
     parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate")
     parser.add_argument("--runs", type=int, default=1, help="Number of runs")
     parser.add_argument("--threshold", type=float, default=0.9, help="Threshold value")
@@ -175,8 +176,8 @@ def main():
     args = parser.parse_args()
 
     # Check if dimensions are specified
-    rows = args.rows if args.specify_dimension == "yes" else None
-    columns = args.columns if args.specify_dimension == "yes" else None
+    rows = args.rows if args.specify_dimension == "yes" else 5
+    columns = args.columns if args.specify_dimension == "yes" else 5
 
     # Create Comparison object
     comparison = Comparison(
@@ -195,10 +196,10 @@ def main():
         update_frequency=args.update_frequency,
         save_file = args.save_file,
     )
-    
-
     # Display parameters
     comparison.display_parameters()
+    #Run comparison
+    comparison.run_comparison()
 
 if __name__ == "__main__":
     main()
