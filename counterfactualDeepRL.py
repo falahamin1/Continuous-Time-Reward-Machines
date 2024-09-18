@@ -43,7 +43,7 @@ class DeepRLCounterFactual():
         self.max_episode_length = max_episode_length #max episode length before termination
         self.update_length = update_length  # Number of steps before the policy network and target network(soft update) is updated
         self.number_of_episodes = number_of_episodes # Number of episodes 
-        self.evaluation_results = []
+        self.evaluation_results = [0]
         self.UPDATE_FREQUENCY = UPDATE_FREQUENCY
         self.hard_update_frequency = hard_update_frequency # hard updates for target network 
          # Information for checking the value of the strategy
