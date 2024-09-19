@@ -148,7 +148,7 @@ class Comparison:
         plt.savefig(self.save_file)
     
     # Show the plot
-        plt.show()
+        
 
             
         
