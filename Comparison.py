@@ -84,7 +84,7 @@ class Comparison:
         vi = ValueIteration(gamma = self.discount_factor, environment = self.env_class, ctrm = self.ctrm )
         Value = vi.doVI()
         self.value = Value
-        if self.specify_dimension == "no":
+        if self.specify_dimension == "yes":
             all_classic = []
             all_counter = []
             length_classic = 0
@@ -105,13 +105,49 @@ class Comparison:
                 if len(sub_array) < length_counter:
         # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
                     sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length)
+            self.save_plot(all_classic, all_counter, self.save_file, self.rows)
+        
+        else: 
+            i = 3
+            self.rows = i
+            self.columns = i
+            self.ctrm, self.env_class = self.get_ctrm_env()
+            while i <= 7: 
+                all_classic = []
+                all_counter = []
+                length_classic = 0
+                length_counter = 0
+                for i in range(self.runs):
+                    classic_data = self.run_classic()
+                    counterfactual_data = self.run_counterfactual()
+                    all_classic.append(classic_data)
+                    all_counter.append(counterfactual_data)
+                    length_classic = max(length_classic, len(classic_data))
+                    length_counter = max(length_counter, len(counterfactual_data))
+                
+                for sub_array in all_classic:
+                    if len(sub_array) < length_classic:
+        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+                        sub_array.extend([sub_array[-1]] * (length_classic - len(sub_array)) if sub_array else [0] * length)
+                for sub_array in all_counter:
+                    if len(sub_array) < length_counter:
+        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+                        sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length)
+                
+                save_file = self.save_file + str(i)
+                self.save_plot(all_classic, all_counter, save_file, i)
+                i += 2
+
+
+
+
             
 
             
             
-            self.save_plot(all_classic, all_counter)
+            
         
-    def save_plot(self, all_classic, all_counter):
+    def save_plot(self, all_classic, all_counter, savefile, rows):
     # Convert lists to numpy arrays for easier percentile calculations
         all_classic = np.array(all_classic)
         all_counter = np.array(all_counter)
@@ -139,7 +175,7 @@ class Comparison:
     # Add labels and title
         plt.xlabel('Time Steps')
         plt.ylabel('Performance')
-        plt.title('Comparison of Classic and Counterfactual Data Over Runs')
+        plt.title(f'Comparison of Classic and Counterfactual Data Over Runs. Grid size {rows}')
     
     # Add a legend
         plt.legend()
