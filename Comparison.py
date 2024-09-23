@@ -162,7 +162,7 @@ class Comparison:
 
             
     def counterfactualsampling(self):
-        sampling_size = [10,20,30,40]
+        sampling_size = [10,20,30]
         all_data_by_sampling_size = {}
         for sample in sampling_size:
             all_data = []
