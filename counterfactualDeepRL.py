@@ -218,9 +218,9 @@ class DeepRLCounterFactual():
                 ctrm_state = self.ctrm.state
                 rate = self.ctrm.get_rate(env_state)
             if (i + 1) % self.UPDATE_FREQUENCY == 0:
-                sum_perfomance = self.get_average(sum_perfomance, (i+1)/self.UPDATE_FREQUENCY)
+                sum_perfomance = self.get_average(sum_perfomance, (i+1)/self.UPDATE_FREQUENCY, value)
                 # print(f"episode: {i}, values given {self.evaluation_results[-1] / value}")
-                if self.evaluation_results[-1]/value > threshold:
+                if self.evaluation_results[-1] > threshold:
                     termination = 1
                     break 
             self.epsilon = self.min_epsilon + (self.max_epsilon - self.min_epsilon)*np.exp(-self.decay_rate *i)
@@ -240,11 +240,12 @@ class DeepRLCounterFactual():
                     next_state1 = next_state + (ctrm_nextstate,)
                     self.buffer.add(previous_state, action, reward, time, next_state1)
     
-    def get_average(self, sum_perfomance, step):
+    def get_average(self, sum_perfomance, step, vi_value):
         agent_value = self.startegy_analaysis()
         self.fill_vtable() # Resets the v table
         sum_perfomance += agent_value
         value = sum_perfomance/step
+        value = value/vi_value
         # print(f"Episode {step}: Agent Value = {value}")
         self.evaluation_results.append(value)
         return sum_perfomance
