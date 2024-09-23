@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --time=2:00:00                # Adjust the time as needed (e.g., 2 hours)
+#SBATCH --time=4:00:00                # Adjust the time as needed (e.g., 2 hours)
 #SBATCH --partition=aa100              # Set the partition to aa100
 #SBATCH --ntasks=1                     # Number of tasks (usually 1 for Python scripts)
 #SBATCH --cpus-per-task=1           # Number of CPU cores for the task
