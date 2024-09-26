@@ -103,6 +103,7 @@ class FireFighterCarEnv():
         x1,y1,target1 = self.state2
         if target == 1: 
             next_state = self.state1
+            time1 = 0
         else: 
             xn, yn, time1 = self.env1.step((x,y), action1)
             if (xn,yn) == self.target1:
@@ -112,8 +113,9 @@ class FireFighterCarEnv():
             next_state = (xn,yn,target)
         if target1 == 1: 
             next_state1 = self.state2
+            time2 = 0
         else: 
-            xn1, yn1 = self.env2.step((x1,y1), action2)
+            xn1, yn1, time2 = self.env2.step((x1,y1), action2)
             if (xn1,yn1) == self.target2:
                 target1 = 1
             else: 
@@ -123,6 +125,8 @@ class FireFighterCarEnv():
         self.state = new_state
         self.state1 = next_state
         self.state2 = next_state1
+        time = max(time1, time2)
+        return self.state, 
 
 
 

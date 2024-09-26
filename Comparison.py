@@ -207,11 +207,11 @@ class Comparison:
     
     # Plot for classic data
         plt.plot(np.arange(classic_50.shape[0]) * self.update_frequency, classic_50, color='orange', label='Classic (Median)')
-        plt.fill_between(np.arange(classic_50.shape[0]) * self.update_frequency, classic_25, classic_75, color='orange', alpha=0.3)
+        # plt.fill_between(np.arange(classic_50.shape[0]) * self.update_frequency, classic_25, classic_75, color='orange', alpha=0.3)
     
     # Plot for counterfactual data
         plt.plot(np.arange(counter_50.shape[0]) * self.update_frequency, counter_50, color='blue', label='Counterfactual (Median)')
-        plt.fill_between(np.arange(counter_50.shape[0]) * self.update_frequency, counter_25, counter_75, color='blue', alpha=0.3)
+        # plt.fill_between(np.arange(counter_50.shape[0]) * self.update_frequency, counter_25, counter_75, color='blue', alpha=0.3)
     
     # Now, add plots for each sampling size on the same figure
         # sampling_size = [10, 20, 30, 40]  # Assuming these are the sampling sizes
@@ -229,7 +229,7 @@ class Comparison:
 
         # Plot for counterfactual sampling data with the sampling size in the legend
             plt.plot(np.arange(sampling_50.shape[0]) * self.update_frequency, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
-            plt.fill_between(np.arange(sampling_50.shape[0]) * self.update_frequency, sampling_25, sampling_75, color=colors[j], alpha=0.3)
+            # plt.fill_between(np.arange(sampling_50.shape[0]) * self.update_frequency, sampling_25, sampling_75, color=colors[j], alpha=0.3)
             j+=1
 
     # Add labels and title
