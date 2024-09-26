@@ -10,6 +10,7 @@ from treasure_hunt import TreasureMapEnv
 from counterfactualDeepRL import DeepRLCounterFactual
 from value_iteration import ValueIteration
 from CounterFactualDRLSampling import DeepRLCounterFactualSampling
+import time 
 
 
 import argparse
@@ -295,4 +296,8 @@ def main():
     comparison.run_comparison()
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print("Time taken:",elapsed_time)
