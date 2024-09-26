@@ -168,13 +168,12 @@ class FireFighterCarEnv():
         self.turn = (turn + 1) % 2    
         self.state = self.state1 + self.state2 + (self.turn,)
         self.time = self.time + time
-        return self.state, self.time
+        return self.state, time
 
 
     def reset(self):
         self.state1 = self.initstate1
         self.state2 = self.initstate2   # Reset to initial state
-        self.turn = 0
         self.time = 0
         self.state = self.state1 + self.state2 + (self.turn,)
         return self.state

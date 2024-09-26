@@ -50,20 +50,20 @@ class Comparison:
         
 
     def display_parameters(self):
-        print(f"Environment: {self.env}")
-        print(f"Specify Dimension: {self.specify_dimension}")
+        print(f"Environment: {self.env}",flush=True)
+        print(f"Specify Dimension: {self.specify_dimension}",flush=True)
         if self.specify_dimension == "yes":
-            print(f"Rows: {self.rows}, Columns: {self.columns}")
-        print(f"Discount Factor: {self.discount_factor}")
-        print(f"Learning Rate: {self.learning_rate}")
-        print(f"Runs: {self.runs}")
-        print(f"Threshold: {self.threshold}")
-        print(f"Max Episodes: {self.max_episodes}")
-        print(f"Episode Length: {self.episode_length}")
-        print(f"Decay Rate: {self.decay_rate}")
-        print(f"Buffer Size: {self.buffer_size}")
-        print(f"Batch Size: {self.batch_size}")
-        print(f"Update Frequency: {self.update_frequency}")
+            print(f"Rows: {self.rows}, Columns: {self.columns}",flush=True)
+        print(f"Discount Factor: {self.discount_factor}",flush=True)
+        print(f"Learning Rate: {self.learning_rate}",flush=True)
+        print(f"Runs: {self.runs}",flush=True)
+        print(f"Threshold: {self.threshold}",flush=True)
+        print(f"Max Episodes: {self.max_episodes}",flush=True)
+        print(f"Episode Length: {self.episode_length}",flush=True)
+        print(f"Decay Rate: {self.decay_rate}",flush=True)
+        print(f"Buffer Size: {self.buffer_size}",flush=True)
+        print(f"Batch Size: {self.batch_size}",flush=True)
+        print(f"Update Frequency: {self.update_frequency}",flush=True)
     
     def run_classic(self):
         DRL =  DeepRLClassic(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
@@ -94,11 +94,11 @@ class Comparison:
 
             
     def run_comparison(self):
-        print("In run comparison.")
+        print("In run comparison.",flush=True)
         vi = ValueIteration(gamma = self.discount_factor, environment = self.env_class, ctrm = self.ctrm )
         Value = vi.doVI()
         self.value = Value
-        print(f"Value is {self.value}")
+        print(f"Value is {self.value}",flush=True)
         if self.specify_dimension == "yes":
             cf_sampling_data = self.counterfactualsampling()
             all_classic = []
@@ -112,8 +112,8 @@ class Comparison:
                 all_counter.append(counterfactual_data)
                 length_classic = max(length_classic, len(classic_data))
                 length_counter = max(length_counter, len(counterfactual_data))
-            print(f"Length counter is {length_counter}")
-            print(f"Length classic is {length_classic}")
+            print(f"Length counter is {length_counter}", flush=True)
+            print(f"Length classic is {length_classic}",flush=True)
                 
             for sub_array in all_classic:
                 if len(sub_array) < length_classic:
@@ -301,4 +301,4 @@ if __name__ == "__main__":
     main()
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print("Time taken:",elapsed_time)
+    print(f"Time taken: {elapsed_time}",flush=True)
