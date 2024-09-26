@@ -235,7 +235,7 @@ class Comparison:
     # Add labels and title
         plt.xlabel('Time Steps')
         plt.ylabel('Performance')
-        plt.title(f'Comparison of Classic, Counterfactual and Counterfactual with Sampling. Grid size {rows}')
+        plt.title(f'Comparison of Classic, Counterfactual and Counterfactual with Sampling on {self.env}. Grid size {rows}')
     
     # Add a legend
         plt.legend()
