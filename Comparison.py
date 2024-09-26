@@ -242,6 +242,7 @@ class Comparison:
 
     # Save the plot for classic, counterfactual, and all sampling sizes
         plt.savefig(savefile)  
+        plt.close()
             
         
 
