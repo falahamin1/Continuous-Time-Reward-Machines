@@ -11,14 +11,14 @@ from counterfactualDeepRL import DeepRLCounterFactual
 from value_iteration import ValueIteration
 from CounterFactualDRLSampling import DeepRLCounterFactualSampling
 import time 
-
-
 import argparse
 
+
 class Comparison:
-    def __init__(self, env, specify_dimension, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file):
+    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file):
         self.env = env
         self.specify_dimension = specify_dimension
+        self.deep_rl = deep_rl
         self.rows = rows
         self.columns = columns
         self.discount_factor = discount_factor
@@ -72,9 +72,6 @@ class Comparison:
         return results
 
 
-            
-    
-
     def run_counterfactual(self):
         CFDRL = DeepRLCounterFactual(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.episode_length, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate)
@@ -87,50 +84,18 @@ class Comparison:
         results = CFDRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes = self.max_episodes)
         return results
 
-            
-
-
-
-
-            
+           
     def run_comparison(self):
         print("In run comparison.",flush=True)
         vi = ValueIteration(gamma = self.discount_factor, environment = self.env_class, ctrm = self.ctrm )
         Value = vi.doVI()
         self.value = Value
         print(f"Value is {self.value}",flush=True)
-        if self.specify_dimension == "yes":
-            cf_sampling_data = self.counterfactualsampling()
-            all_classic = []
-            all_counter = []
-            length_classic = 0
-            length_counter = 0
-            for i in range(self.runs):
-                classic_data = self.run_classic()
-                counterfactual_data = self.run_counterfactual()
-                all_classic.append(classic_data)
-                all_counter.append(counterfactual_data)
-                length_classic = max(length_classic, len(classic_data))
-                length_counter = max(length_counter, len(counterfactual_data))
-            print(f"Length counter is {length_counter}", flush=True)
-            print(f"Length classic is {length_classic}",flush=True)
-                
-            for sub_array in all_classic:
-                if len(sub_array) < length_classic:
-        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-                    sub_array.extend([sub_array[-1]] * (length_classic - len(sub_array)) if sub_array else [0] * length_classic)
-            for sub_array in all_counter:
-                if len(sub_array) < length_counter:
-        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-                    sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_counter)
-            self.save_plot(all_classic, all_counter,cf_sampling_data, self.save_file, self.rows)
-        
-        else: 
-            i = 3
-            self.rows = i
-            self.columns = i
-            self.ctrm, self.env_class = self.get_ctrm_env()
-            while i <= 7: 
+        if self.deep_rl == "yes":
+            self.run_comparison_tabular()
+        else:
+            if self.specify_dimension == "yes":
+                cf_sampling_data = self.counterfactualsampling()
                 all_classic = []
                 all_counter = []
                 length_classic = 0
@@ -142,6 +107,8 @@ class Comparison:
                     all_counter.append(counterfactual_data)
                     length_classic = max(length_classic, len(classic_data))
                     length_counter = max(length_counter, len(counterfactual_data))
+                print(f"Length counter is {length_counter}", flush=True)
+                print(f"Length classic is {length_classic}",flush=True)
                 
                 for sub_array in all_classic:
                     if len(sub_array) < length_classic:
@@ -150,16 +117,40 @@ class Comparison:
                 for sub_array in all_counter:
                     if len(sub_array) < length_counter:
         # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-                        sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_classic)
+                        sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_counter)
+            self.save_plot(all_classic, all_counter,cf_sampling_data, self.save_file, self.rows)
+        
+        #     else: 
+        #     i = 3
+        #     self.rows = i
+        #     self.columns = i
+        #     self.ctrm, self.env_class = self.get_ctrm_env()
+        #     while i <= 7: 
+        #         all_classic = []
+        #         all_counter = []
+        #         length_classic = 0
+        #         length_counter = 0
+        #         for i in range(self.runs):
+        #             classic_data = self.run_classic()
+        #             counterfactual_data = self.run_counterfactual()
+        #             all_classic.append(classic_data)
+        #             all_counter.append(counterfactual_data)
+        #             length_classic = max(length_classic, len(classic_data))
+        #             length_counter = max(length_counter, len(counterfactual_data))
                 
-                save_file = self.save_file + str(i)
-                self.save_plot(all_classic, all_counter, save_file, i)
-                i += 2
+        #         for sub_array in all_classic:
+        #             if len(sub_array) < length_classic:
+        # # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+        #                 sub_array.extend([sub_array[-1]] * (length_classic - len(sub_array)) if sub_array else [0] * length_classic)
+        #         for sub_array in all_counter:
+        #             if len(sub_array) < length_counter:
+        # # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+        #                 sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_classic)
+                
+        #         save_file = self.save_file + str(i)
+        #         self.save_plot(all_classic, all_counter, save_file, i)
+        #         i += 2
 
-
-
-
-            
 
             
     def counterfactualsampling(self):
@@ -178,14 +169,10 @@ class Comparison:
                         sub_array.extend([sub_array[-1]] * (length - len(sub_array)) if sub_array else [0] * length)
             all_data_by_sampling_size[sample] = all_data
         return all_data_by_sampling_size
-
-            
-
-                
+                            
 
     def create_plot(self):
         plt.figure(figsize=(10, 6))
-
 
 
     def save_plot(self, all_classic, all_counter, all_counter_sampling, savefile, rows):
@@ -245,14 +232,13 @@ class Comparison:
         plt.close()
             
         
-
-
 def main():
     parser = argparse.ArgumentParser(description="Comparison class input arguments")
 
     # Add arguments
     parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map)")
     parser.add_argument("--specify_dimension", type=str, choices=["yes", "no"], default="no", help="Specify dimensions (yes/no)")
+    parser.add_argument("--deep_rl", type=str, choices=["yes", "no"], default="no", help="Specify if Deep RL needs to be used")
     parser.add_argument("--rows", type=int, default=None, help="Number of rows if dimensions are specified")
     parser.add_argument("--columns", type=int, default=None, help="Number of columns if dimensions are specified")
     parser.add_argument("--discount_factor", type=float, default=0.0001, help="Discount factor for learning")
@@ -277,6 +263,7 @@ def main():
     comparison = Comparison(
         env=args.env,
         specify_dimension=args.specify_dimension,
+        deep_rl = args.deep_rl,
         rows=rows,
         columns=columns,
         discount_factor=args.discount_factor,
