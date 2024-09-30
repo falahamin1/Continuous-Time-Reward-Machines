@@ -1,8 +1,8 @@
 import numpy as np
 
-class FireFighterCarCTRM:
+class FireFighterCarSynchCTRM:
     def __init__(self):
-        self.states = [0,1,2]
+        self.states = [0,1,2,3]
         self.totalstates = 3
         self.initstate = 0 #initial state
         self.finalstate = 2
@@ -17,7 +17,7 @@ class FireFighterCarCTRM:
     (6, 0): 0.06, (6, 1): 0.03, (6, 2): 0.2, (6, 3): 0.06, (6, 4): 0.06, (6, 5): 0.2, (6, 6): 0.03
 }
         self.function2 = {position: round(value * 10, 2) for position, value in self.function1.items()}
-        self.function3 = {position: round(value * 5, 2) for position, value in self.function1.items()}
+        self.function3 = {position: round(value * 10, 2) for position, value in self.function1.items()}
         # print("New reward machine")
     
     def transitionfunction(self, input_state): #Takes the transition in the reward machine and gives the reward
@@ -25,18 +25,24 @@ class FireFighterCarCTRM:
             if input_state[2] > 0: #checks if player 1 has reached the target
                 self.state = 1
                 return 0
-            else: 
-                self.state = 0
+            elif input_state[5] > 0: #checks if player 2 has reached the target 
+                self.state = 2
+                return 0
+            else:
+                self.state = 1
                 return 0
 
         elif self.state == 1: 
             if input_state[5] > 0: 
-                self.state = 2
+                self.state = 3
                 return 1
             else:
                 self.state = 1
                 return 0
-        
+        elif self.state == 2: 
+            if input_state[2] > 0: 
+                self.state = 3
+                return 1
         else:
             return None
 
@@ -47,6 +53,10 @@ class FireFighterCarCTRM:
                 next_state = 1
                 reward = 0
                 return reward, next_state
+            elif input_state[5] > 0:
+                next_state = 2
+                reward = 0
+                return reward,next_state 
             else: 
                 next_state = 0
                 reward = 0
@@ -54,11 +64,20 @@ class FireFighterCarCTRM:
 
         elif ctrmstate == 1: 
             if input_state[5] > 0: 
-                next_state = 2
+                next_state = 3
                 reward = 1
                 return reward, next_state
             else:
                 next_state = 1
+                reward = 0
+                return reward, next_state
+        elif ctrmstate == 2:
+            if input_state[2] > 0:
+                next_state = 3
+                reward = 1
+                return reward, next_state
+            else:
+                next_state = 2
                 reward = 0
                 return reward, next_state
         else:
@@ -68,36 +87,32 @@ class FireFighterCarCTRM:
 
 
     def get_rate_counterfactual(self,ctrmstate, input_state):
-        x1, y1, target1, x2, y2, target2, turn = input_state
-
-        if turn == 0: 
-            return self.function2[(x1,y1)]
-        
-        else: 
-            if ctrmstate == 0:
+        x1, y1, target1, x2, y2, target2 = input_state
+        rate1 = self.function2[(x1,y1)]
+        if ctrmstate == 0:
                 if x2 == x1 or y2 == y1: #Car in traffic
-                    return self.function1[(x2,y2)]
+                    rate2 = self.function1[(x2,y2)]
                 else: 
-                    return self.function3[(x2,y2)]
-            else: 
-                return self.function3[(x2,y2)]
+                    rate2 = self.function3[(x2,y2)]
+        else: 
+                rate2 =  self.function3[(x2,y2)]
+        rate = min(rate1,rate2)
+        return rate
         
 
     def get_rate(self,input_state):
-        x1, y1, target1, x2, y2, target2, turn = input_state
-        if turn == 0: 
-            return self.function2[(x1,y1)]
-        
-        else: 
-            if self.state == 0:
-
+        # print(f"Length of input_state: {len(input_state)}")
+        x1, y1, target1, x2, y2, target2 = input_state
+        rate1 = self.function2[(x1,y1)]
+        if self.state == 0:
                 if x2 == x1 or y2 == y1: #Car in traffic
-                    return self.function1[(x2,y2)]
+                    rate2 = self.function1[(x2,y2)]
                 else: 
-                    return self.function3[(x2,y2)]
-            else: 
-                return self.function3[(x2,y2)]
-
+                    rate2 = self.function3[(x2,y2)]
+        else: 
+                rate2 =  self.function3[(x2,y2)]
+        rate = min(rate1,rate2)
+        return rate
 
     
 

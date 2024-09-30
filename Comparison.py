@@ -7,6 +7,8 @@ from firefightercar_ctrm import FireFighterCarCTRM
 from firefighter_car import FireFighterCarEnv
 from treasure_hunt_ctrm import TreasureMapCTRM
 from treasure_hunt import TreasureMapEnv
+from firefighter_sync import FireFighterCarSynchEnv
+from firefighter_sync_ctrm import FireFighterCarSynchCTRM
 from counterfactualDeepRL import DeepRLCounterFactual
 from value_iteration import ValueIteration
 from CounterFactualDRLSampling import DeepRLCounterFactualSampling
@@ -16,10 +18,11 @@ from TabularLearningCounterFactual import DynamicQLearningCounterFactual
 import time 
 import argparse
 from TabularLearning import DynamicQLearning
+import pickle
 
 
 class Comparison:
-    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file):
+    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file,save_data):
         self.env = env
         self.specify_dimension = specify_dimension
         self.deep_rl = deep_rl
@@ -36,6 +39,7 @@ class Comparison:
         self.batch_size = batch_size
         self.update_frequency = update_frequency
         self.save_file = save_file
+        self.save_data = save_data
         self.ctrm, self.env_class = self.get_ctrm_env()
         self.value = None
 
@@ -50,6 +54,9 @@ class Comparison:
         elif self.env == "cop-car":
             ctrm = CopCarCTRM()
             env = CopCarEnv(self.rows, self.columns, probability= 0.9)
+        elif self.env == "firefighter-synch":
+            ctrm = FireFighterCarSynchCTRM()
+            env = FireFighterCarSynchEnv(self.rows,self.columns, probability= 0.95)
         return ctrm, env
         
 
@@ -299,18 +306,29 @@ class Comparison:
     # Save the plot for classic, counterfactual, and all sampling sizes
         plt.savefig(savefile)  
         plt.close()
+
+        data_to_save = {
+        'all_classic': all_classic,
+        'all_counter': all_counter,
+        'all_counter_sampling': all_counter_sampling
+    }
+
+        with open(self.save_data, 'wb') as f:
+            pickle.dump(data_to_save, f)
+
+        print(f"Data saved to {self.save_data}",flush=True)
             
         
 def main():
     parser = argparse.ArgumentParser(description="Comparison class input arguments")
 
     # Add arguments
-    parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map)")
+    parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map, firefighter_synch)")
     parser.add_argument("--specify_dimension", type=str, choices=["yes", "no"], default="no", help="Specify dimensions (yes/no)")
     parser.add_argument("--deep_rl", type=str, choices=["yes", "no"], default="no", help="Specify if Deep RL needs to be used")
     parser.add_argument("--rows", type=int, default=None, help="Number of rows if dimensions are specified")
     parser.add_argument("--columns", type=int, default=None, help="Number of columns if dimensions are specified")
-    parser.add_argument("--discount_factor", type=float, default=0.0001, help="Discount factor for learning")
+    parser.add_argument("--discount_factor", type=float, default=0.001, help="Discount factor for learning")
     parser.add_argument("--learning_rate", type=float, default=0.1, help="Learning rate")
     parser.add_argument("--runs", type=int, default=1, help="Number of runs")
     parser.add_argument("--threshold", type=float, default=0.9, help="Threshold value")
@@ -321,6 +339,8 @@ def main():
     parser.add_argument("--batch_size", type=int, default=1500, help="Batch size")
     parser.add_argument("--update_frequency", type=int, default=50, help="Update frequency")
     parser.add_argument("--save_file", type=str, default="default_plot", help="filename of the saved plot")
+    parser.add_argument("--save_data", type=str, default="default_data", help="filename of the saved data")
+
 
     args = parser.parse_args()
 
@@ -346,6 +366,7 @@ def main():
         batch_size=args.batch_size,
         update_frequency=args.update_frequency,
         save_file = args.save_file,
+        save_data = args.save_data,
     )
     # Display parameters
     comparison.display_parameters()

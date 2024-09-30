@@ -23,7 +23,7 @@ class TreasureMapCTRM:
  (9, 12): 0.03,(10, 0): 0.2,(10, 1): 0.2,(10, 2): 0.2,(10, 3): 0.06,(10, 4): 0.06,(10, 5): 0.2,(10, 6): 0.2,(10, 7): 0.2,(10, 8): 0.03,(10, 9): 0.06,
  (10, 10): 0.2,(10, 11): 0.2,(10, 12): 0.2,(11, 0): 0.06,(11, 1): 0.06,(11, 2): 0.06,(11, 3): 0.2,(11, 4): 0.2,(11, 5): 0.06,(11, 6): 0.2,(11, 7): 0.06,(11, 8): 0.2,(11, 9): 0.03,(11, 10): 0.06,(11, 11): 0.2,
  (11, 12): 0.03,(12, 0): 0.03,(12, 1): 0.06,(12, 2): 0.2,(12, 3): 0.06,(12, 4): 0.2,(12, 5): 0.06,(12, 6): 0.03,(12, 7): 0.06,(12, 8): 0.2,(12, 9): 0.03,(12, 10): 0.03,(12, 11): 0.06,(12, 12): 0.03}
-        self.function1 = {position: round(value * 10, 2) for position, value in self.function1.items()}
+        self.function1 = {position: round(value * 3, 2) for position, value in self.function1.items()}
         self.function2 = {position: round(value * 10, 2) for position, value in self.function1.items()}
   # Ordering of atomic propositions :   map, tool, vehicle, treasure, jeweller
     def transitionfunction(self, input_state): #Takes the transition in the reward machine and gives the reward

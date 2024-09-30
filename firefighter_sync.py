@@ -1,20 +1,19 @@
 import numpy as np
 from Gridworld import Gridworld
 
-class FireFighterCarEnv():
+class FireFighterCarSynchEnv():
     def __init__(self, rows, cols, probability):
         self.initstate1 = (0,0,0) # starting point of fire engine
         self.initstate2 = (0,cols - 1,0)  # starting point of car
         self.state1 = self.initstate1
         self.state2 = self.initstate2
-        self.turn = 0 #This state indicates the turn of the player
-        self.actions = list(range(17))  # 16 combination of actions representing actions of the two vehicles 
+        self.actions = list(range(16))  # 16 combination of actions representing actions of the two vehicles 
         self.time = 0
         self.env1 = Gridworld(rows, cols, probability)
         self.env2 = Gridworld(rows, cols, probability)
         self.target1 = (rows-1, cols-1) # Target of the fire engine
         self.target2 = (rows-1, 0)
-        self.statesize = 7
+        self.statesize = 6
         self.actionsize = 16
         self.state = self.state1 + self.state2 
         self.initstate = self.initstate1 + self.initstate2 # No turn variable, synchronous transition
@@ -43,9 +42,9 @@ class FireFighterCarEnv():
                 next_states.append(state)
         return next_states
     def convert_action(self,action):
-        if 0 <= action <= 16:
-            first_value = action // 5  # Integer division by 5 to get the first value (row)
-            second_value = action % 5  # Modulo 5 to get the second value (column)
+        if 0 <= action <= 15:
+            first_value = action // 4  # Integer division by 5 to get the first value (row)
+            second_value = action % 4  # Modulo 5 to get the second value (column)
             return first_value, second_value
         else:
             raise ValueError("Index must be between 0 and 16 inclusive.")
@@ -53,7 +52,7 @@ class FireFighterCarEnv():
     def next_state(self, state, action): # provides a dictionary that gives the next state of an action and also the probability of transition
         action1, action2 = self.convert_action(action)
         next_states = {} 
-        next_states[state] = 1 - (self.probability * self.probability)
+        # next_states[state] = 1 - (self.probability * self.probability)
         x,y,target = state[:3]
         x1,y1,target1 = state[3:6]
         if target == 1: 
@@ -61,20 +60,20 @@ class FireFighterCarEnv():
         else:
             xn1,yn1 = self.env1.next_state((x,y), action1)
             if (xn1, yn1) == self.target1:
-                    target = 1
+                    t = 1
             else:
-                    target = 0
-            next_state1 = (xn1,yn1,target)
+                    t = 0
+            next_state1 = (xn1,yn1,t)
         
         if target1 == 1: 
             next_state2 = (x1,y1,target1)
         else: 
             xn2,yn2 = self.env2.next_state((x1,y1), action2)
             if (xn2, yn2) == self.target2:
-                    target = 1
+                    t = 1
             else:
-                    target = 0
-            next_state2 = (xn2,yn2,target)
+                    t = 0
+            next_state2 = (xn2,yn2,t)
         
         next_state = next_state1 + next_state2
         if target == 1:
@@ -88,12 +87,11 @@ class FireFighterCarEnv():
                 next_states[state] = 1 - self.probability
                 next_states[next_state] = self.probability
             else: 
+                next_states[state] = 1 - (self.probability * self.probability)
                 next_states[next_state] = self.probability * self.probability
-        if next_states[state] + next_states[next_state] == 1: 
-            return next_states
+    
+        return next_states
             
-        else:
-            raise ValueError("Next state error, distribution is not valid") 
         
         
 
@@ -105,7 +103,7 @@ class FireFighterCarEnv():
             next_state = self.state1
             time1 = 0
         else: 
-            xn, yn, time1 = self.env1.step((x,y), action1)
+            xn, yn, time1 = self.env1.step((x,y), action1, rate)
             if (xn,yn) == self.target1:
                 target = 1
             else: 
@@ -115,7 +113,7 @@ class FireFighterCarEnv():
             next_state1 = self.state2
             time2 = 0
         else: 
-            xn1, yn1, time2 = self.env2.step((x1,y1), action2)
+            xn1, yn1, time2 = self.env2.step((x1,y1), action2, rate)
             if (xn1,yn1) == self.target2:
                 target1 = 1
             else: 
@@ -126,48 +124,6 @@ class FireFighterCarEnv():
         self.state1 = next_state
         self.state2 = next_state1
         time = max(time1, time2)
-        return self.state, 
-
-
-
-
-        
-
-
-
-
-
-
-        turn = self.turn
-        if turn == 0: 
-            x, y, target = self.state1
-            if target == 1: 
-                self.turn = (turn + 1) % 2
-                self.state = self.state1 + self.state2 + (self.turn,)
-                return self.state, 0 
-            else:
-                x1, y1, time = self.env1.step((x,y), action, rate)
-                if (x1, y1) == self.target1:
-                    target = 1
-                else: 
-                    target = 0
-                self.state1 = (x1, y1, target)   
-        else:
-            x, y, target = self.state2
-            if target == 1: 
-                self.turn = (turn + 1) % 2
-                self.state = self.state1 + self.state2 + (self.turn,)
-                return self.state, 0
-            else:
-                x1, y1, time = self.env2.step((x,y), action, rate)
-                if (x1, y1) == self.target2:
-                    target = 1
-                else: 
-                    target = 0
-                self.state2 = (x1, y1, target) 
-        self.turn = (turn + 1) % 2    
-        self.state = self.state1 + self.state2 + (self.turn,)
-        self.time = self.time + time
         return self.state, time
 
 
@@ -175,5 +131,5 @@ class FireFighterCarEnv():
         self.state1 = self.initstate1
         self.state2 = self.initstate2   # Reset to initial state
         self.time = 0
-        self.state = self.state1 + self.state2 + (self.turn,)
+        self.state = self.state1 + self.state2 
         return self.state
