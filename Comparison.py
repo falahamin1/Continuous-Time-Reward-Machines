@@ -10,8 +10,12 @@ from treasure_hunt import TreasureMapEnv
 from counterfactualDeepRL import DeepRLCounterFactual
 from value_iteration import ValueIteration
 from CounterFactualDRLSampling import DeepRLCounterFactualSampling
+from TabularCounterSampling import DynamicQLearningCounterFactualSampling
+from TabularLearning import DynamicQLearning
+from TabularLearningCounterFactual import DynamicQLearningCounterFactual
 import time 
 import argparse
+from TabularLearning import DynamicQLearning
 
 
 class Comparison:
@@ -71,11 +75,23 @@ class Comparison:
         results = DRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes= self.max_episodes)
         return results
 
+    def run_classic_tabular(self):
+        DRL =  DynamicQLearning(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
+        environment= self.env, ctrm= self.ctrm, decay_rate= self.decay_rate)
+        results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
+        return results
+
 
     def run_counterfactual(self):
         CFDRL = DeepRLCounterFactual(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.episode_length, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate)
         results = CFDRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes= self.max_episodes)
+        return results
+# def trainwithconvergence(self, num_episodes, max_episode_length, value, threshold, max_episodes = 100000):
+    def run_counterfactual_tabular(self):
+        DRL =  DynamicQLearningCounterFactual(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
+        environment= self.env, ctrm= self.ctrm, decay_rate= self.decay_rate)
+        results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
 
     def run_counterfactual_sampling(self, sampling):
@@ -83,6 +99,40 @@ class Comparison:
     max_episode_length = self.episode_length, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate, sampling= sampling)
         results = CFDRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes = self.max_episodes)
         return results
+
+    def run_counterfactual_sampling_tabular(self, sampling):
+        DRL =  DynamicQLearningCounterFactualSampling(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
+        environment= self.env, ctrm= self.ctrm, decay_rate= self.decay_rate,sampling= sampling)
+        results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
+        return results
+
+    def run_comparison_tabular(self):
+        value = self.value
+        cf_sampling_data = self.counterfactualsampling_tabular()
+        all_classic = []
+        all_counter = []
+        length_classic = 0
+        length_counter = 0
+        for i in range(self.runs):
+                    classic_data = self.run_classic_tabular()
+                    counterfactual_data = self.run_counterfactual_tabular()
+                    all_classic.append(classic_data)
+                    all_counter.append(counterfactual_data)
+                    length_classic = max(length_classic, len(classic_data))
+                    length_counter = max(length_counter, len(counterfactual_data))
+        print(f"Length counter is {length_counter}", flush=True)
+        print(f"Length classic is {length_classic}",flush=True)
+                
+        for sub_array in all_classic:
+                    if len(sub_array) < length_classic:
+        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+                        sub_array.extend([sub_array[-1]] * (length_classic - len(sub_array)) if sub_array else [0] * length_classic)
+        for sub_array in all_counter:
+                    if len(sub_array) < length_counter:
+        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+                        sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_counter)
+        self.save_plot(all_classic, all_counter,cf_sampling_data, self.save_file, self.rows)
+
 
            
     def run_comparison(self):
@@ -152,7 +202,26 @@ class Comparison:
         #         i += 2
 
 
-            
+
+
+    def counterfactualsampling_tabular(self):
+        sampling_size = [10,20,30]
+        all_data_by_sampling_size = {}
+        for sample in sampling_size:
+            all_data = []
+            length = 0 
+            for i in range(self.runs):
+                data = self.run_counterfactual_sampling_tabular(sample)
+                all_data.append(data)
+                length = max (length, len(data))
+            for sub_array in all_data:
+                    if len(sub_array) < length:
+        # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
+                        sub_array.extend([sub_array[-1]] * (length - len(sub_array)) if sub_array else [0] * length)
+            all_data_by_sampling_size[sample] = all_data
+        return all_data_by_sampling_size
+
+
     def counterfactualsampling(self):
         sampling_size = [10,20,30]
         all_data_by_sampling_size = {}

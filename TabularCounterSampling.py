@@ -2,7 +2,7 @@ import numpy as np
 import math
 from collections import deque
 class DynamicQLearningCounterFactualSampling:
-    def __init__(self, alpha=0.1, gamma=0.001, epsilon=1, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
+    def __init__(self, alpha=0.1, gamma=0.001, epsilon=1, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05, sampling = 10):
         self.q_table = {}
         self.alpha = alpha
         self.gamma = gamma
@@ -203,15 +203,16 @@ class DynamicQLearningCounterFactualSampling:
         return self.startegy_analaysis()
     
     def add_counterfactual_experience(self,ctrm, state, action, next_state, available_actions):
-        for ctrmstate in ctrm.states:
-            rate = ctrm.get_rate_counterfactual(ctrmstate, state)
-            if rate is not None:
-                reward, ctrm_nextstate = ctrm.transition_function_counterfactual(ctrmstate, next_state)
-                time = 1/rate
-                if reward  is not None and ctrm_nextstate is not None:
-                    previous_state = state + (ctrmstate,)
-                    next_state1 = next_state + (ctrm_nextstate,)
-                    self.update_q_table(previous_state, action, reward, time, next_state1, available_actions)
+        for _ in self.sampling:
+            for ctrmstate in ctrm.states:
+                rate = ctrm.get_rate_counterfactual(ctrmstate, state)
+                if rate is not None:
+                    reward, ctrm_nextstate = ctrm.transition_function_counterfactual(ctrmstate, next_state)
+                    time = np.random.exponential(scale= 1/rate)
+                    if reward  is not None and ctrm_nextstate is not None:
+                        previous_state = state + (ctrmstate,)
+                        next_state1 = next_state + (ctrm_nextstate,)
+                        self.update_q_table(previous_state, action, reward, time, next_state1, available_actions)
             
             
 
