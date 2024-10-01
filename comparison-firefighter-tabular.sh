@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --time=23:00:00                # Adjust the time as needed (e.g., 2 hours)
+#SBATCH --time=20:00:00                # Adjust the time as needed (e.g., 2 hours)
 #SBATCH --partition=amilan              # Set the partition to aa100
 #SBATCH --ntasks=1                     # Number of tasks (usually 1 for Python scripts)
 #SBATCH --cpus-per-task=1           # Number of CPU cores for the task
@@ -18,5 +18,5 @@ module load anaconda
 conda activate amfa-custom-env
 
 # Run the Python script with the given arguments
-python3 Comparison.py --env firefighter-car --specify_dimension yes --rows 7 --columns 7 --runs 30 --threshold 0.9 --max_episodes 100000 --save_file firefighter-comparison-server --buffer_size 75000 --save_data firefighter-comparison-server-data --deep_rl no
+python3 Comparison.py --env firefighter-car --specify_dimension yes --rows 7 --columns 7 --runs 30 --threshold 0.85 --max_episodes 100000 --save_file firefighter-comparison-server --buffer_size 75000 --save_data firefighter-comparison-server-data --deep_rl no
 
