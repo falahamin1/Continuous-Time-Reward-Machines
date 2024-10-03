@@ -148,7 +148,7 @@ class Comparison:
         Value = vi.doVI()
         self.value = Value
         print(f"Value is {self.value}",flush=True)
-        if self.deep_rl == "yes":
+        if self.deep_rl == "no":
             self.run_comparison_tabular()
         else:
             if self.specify_dimension == "yes":
@@ -325,7 +325,7 @@ def main():
     # Add arguments
     parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map, firefighter_synch)")
     parser.add_argument("--specify_dimension", type=str, choices=["yes", "no"], default="no", help="Specify dimensions (yes/no)")
-    parser.add_argument("--deep_rl", type=str, choices=["yes", "no"], default="no", help="Specify if Deep RL needs to be used")
+    parser.add_argument("--deep_rl", type=str, choices=["yes", "no"], default="yes", help="Specify if Deep RL needs to be used")
     parser.add_argument("--rows", type=int, default=None, help="Number of rows if dimensions are specified")
     parser.add_argument("--columns", type=int, default=None, help="Number of columns if dimensions are specified")
     parser.add_argument("--discount_factor", type=float, default=0.001, help="Discount factor for learning")
