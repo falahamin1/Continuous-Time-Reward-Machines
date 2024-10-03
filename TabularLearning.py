@@ -160,7 +160,7 @@ class DynamicQLearning:
             self.epsilon = max(self.epsilon*self.epsilon_decay, 0.01) # epsilon decay
         return self.evaluation_results
     
-    def trainwithconvergence(self, num_episodes, max_episode_length, value, threshold, max_episodes = 1000000):
+    def trainwithconvergence(self, max_episode_length, value, threshold, max_episodes = 1000000):
         sum_perfomance = 0
         termination = 0
         episode = 0

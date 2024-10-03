@@ -84,7 +84,7 @@ class Comparison:
 
     def run_classic_tabular(self):
         DRL =  DynamicQLearning(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
-        environment= self.env, ctrm= self.ctrm, decay_rate= self.decay_rate)
+        environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
 
@@ -97,7 +97,7 @@ class Comparison:
 # def trainwithconvergence(self, num_episodes, max_episode_length, value, threshold, max_episodes = 100000):
     def run_counterfactual_tabular(self):
         DRL =  DynamicQLearningCounterFactual(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
-        environment= self.env, ctrm= self.ctrm, decay_rate= self.decay_rate)
+        environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
 
@@ -109,7 +109,7 @@ class Comparison:
 
     def run_counterfactual_sampling_tabular(self, sampling):
         DRL =  DynamicQLearningCounterFactualSampling(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
-        environment= self.env, ctrm= self.ctrm, decay_rate= self.decay_rate,sampling= sampling)
+        environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,sampling= sampling)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
 

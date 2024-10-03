@@ -21,8 +21,8 @@ def save_plot( all_classic, all_counter, all_counter_sampling):
         plt.figure(figsize=(10, 6))
     
     # Plot for classic data
-        # plt.plot(np.arange(classic_50.shape[0]) * 50, classic_50, color='orange', label='Classic (Median)')
-        # plt.fill_between(np.arange(classic_50.shape[0]) * 50, classic_25, classic_75, color='orange', alpha=0.3)
+        plt.plot(np.arange(classic_50.shape[0]) * 50, classic_50, color='orange', label='Classic (Median)')
+        plt.fill_between(np.arange(classic_50.shape[0]) * 50, classic_25, classic_75, color='orange', alpha=0.3)
     
     # Plot for counterfactual data
         plt.plot(np.arange(counter_50.shape[0]) * 50, counter_50, color='blue', label='Counterfactual (Median)')
@@ -50,7 +50,7 @@ def save_plot( all_classic, all_counter, all_counter_sampling):
     # Add labels and title
         plt.xlabel('Time Steps')
         plt.ylabel('Performance')
-        plt.title(f'Comparison of Classic, Counterfactual and Counterfactual with Sampling on treasure-hunt (tabular)')
+        plt.title(f'Comparison of Classic, Counterfactual and Counterfactual with Sampling on treasurehunt (deep-rl)')
     
     # Add a legend
         plt.legend()
@@ -62,7 +62,7 @@ def save_plot( all_classic, all_counter, all_counter_sampling):
         plt.close()
 
 # Path to the file you saved earlier
-datafile = 'treasurehunt-server-tabular-data'
+datafile = 'treasurehunt-comparison-server-data'
 
 # Open the file in binary read mode and load the data
 with open(datafile, 'rb') as f:

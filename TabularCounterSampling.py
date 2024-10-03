@@ -15,7 +15,7 @@ class DynamicQLearningCounterFactualSampling:
         self.epsilon_decay = decay_rate
         self.env = environment
         self.ctrm = ctrm
-
+        self.sampling = sampling
          # Information for checking the value of the strategy
         self.V = {}
         self.states = self.fill_states()
@@ -142,7 +142,7 @@ class DynamicQLearningCounterFactualSampling:
         return self.evaluation_results
 
 
-    def trainwithconvergence(self, num_episodes, max_episode_length, value, threshold, max_episodes = 100000):
+    def trainwithconvergence(self, max_episode_length, value, threshold, max_episodes = 100000):
         sum_perfomance = 0
         termination = 0
         episode = 0
@@ -203,7 +203,7 @@ class DynamicQLearningCounterFactualSampling:
         return self.startegy_analaysis()
     
     def add_counterfactual_experience(self,ctrm, state, action, next_state, available_actions):
-        for _ in self.sampling:
+        for _ in range(self.sampling):
             for ctrmstate in ctrm.states:
                 rate = ctrm.get_rate_counterfactual(ctrmstate, state)
                 if rate is not None:
