@@ -17,5 +17,5 @@ module load anaconda
 conda activate amfa-custom-env
 
 # Run the Python script with the given arguments
-python3 Comparison.py --env cop-car --specify_dimension yes --rows 7 --columns 7 --runs 30 --threshold 0.9 --max_episodes 100000 --save_file treasurehunt-comparison-server1 --buffer_size 50000 --save_data treasurehunt-server-tabular-data --deep_rl no
+python3 Comparison.py --env treasure-map --specify_dimension yes --rows 7 --columns 7 --runs 30 --threshold 0.9 --max_episodes 100000 --save_file treasurehunt-comparison-server1 --buffer_size 50000 --save_data treasurehunt-server-tabular-data --deep_rl no
 

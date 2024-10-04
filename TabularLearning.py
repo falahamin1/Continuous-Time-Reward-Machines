@@ -166,8 +166,8 @@ class DynamicQLearning:
         episode = 0
         while termination == 0 and episode <= max_episodes:
         # while termination == 0:
-            if episode % 1000 == 0:
-                print("Episode:", episode)
+            # if episode % 1000 == 0:
+                # print("Episode:", episode)
             env_state = self.env.reset()
             ctrm_state = self.ctrm.reset()
             rate = self.ctrm.get_rate(env_state)
