@@ -17,5 +17,5 @@ module load anaconda
 conda activate amfa-custom-env
 
 # Run the Python script with the given arguments
-python3 Comparison.py --env firefighter-car --specify_dimension yes --rows 5 --columns 5 --runs 30 --threshold 0.85 --max_episodes 100000 --save_file firefighter-tabular-server --buffer_size 75000 --discount_factor 0.0001 --save_data firefighter-tabular-server-data --deep_rl no
+python3 Comparison.py --env firefighter-car --specify_dimension yes --rows 5 --columns 5 --runs 20 --threshold 0.85 --max_episodes 100000 --save_file firefighter-tabular-server --buffer_size 75000 --discount_factor 0.0001 --save_data firefighter-tabular-server-data --deep_rl no
 

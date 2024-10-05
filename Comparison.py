@@ -75,6 +75,7 @@ class Comparison:
         print(f"Buffer Size: {self.buffer_size}",flush=True)
         print(f"Batch Size: {self.batch_size}",flush=True)
         print(f"Update Frequency: {self.update_frequency}",flush=True)
+        print(f"Deep Rl: {self.deep_rl}",flush=True)
     
     def run_classic(self):
         DRL =  DeepRLClassic(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 

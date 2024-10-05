@@ -18,5 +18,5 @@ module load anaconda
 conda activate amfa-custom-env
 
 # Run the Python script with the given arguments
-python3 Comparison.py --env treasure-map --specify_dimension yes --rows 7 --columns 7 --runs 30 --threshold 0.9 --max_episodes 100000 --save_file treasurehunt-deeprl-server --buffer_size 50000 --save_data treasurehunt-deeprl-server-data
+python3 Comparison.py --env treasure-map --specify_dimension yes --rows 7 --columns 7 --runs 20 --threshold 0.8 --max_episodes 100000 --save_file treasurehunt-deeprl-server --buffer_size 50000 --save_data treasurehunt-deeprl-server-data
 
