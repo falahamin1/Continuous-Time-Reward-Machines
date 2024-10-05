@@ -50,7 +50,7 @@ def save_plot( all_classic, all_counter, all_counter_sampling):
     # Add labels and title
         plt.xlabel('Time Steps')
         plt.ylabel('Performance')
-        plt.title(f'Comparison of Classic, Counterfactual and Counterfactual with Sampling on treasurehunt (deep-rl)')
+        plt.title(f'Comparison of Classic, Counterfactual and Counterfactual with Sampling on treasurehunt (tabular)')
     
     # Add a legend
         plt.legend()
@@ -62,7 +62,7 @@ def save_plot( all_classic, all_counter, all_counter_sampling):
         plt.close()
 
 # Path to the file you saved earlier
-datafile = 'treasurehunt-comparison-server-data'
+datafile = 'treasurehunt-server-tabular-data'
 
 # Open the file in binary read mode and load the data
 with open(datafile, 'rb') as f:

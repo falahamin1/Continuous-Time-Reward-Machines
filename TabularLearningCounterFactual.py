@@ -176,7 +176,7 @@ class DynamicQLearningCounterFactual:
                 if rate is None: 
                     break
             if (episode + 1) % self.UPDATE_FREQUENCY == 0:
-                sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY)
+                sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY, value)
                 # print(f"episode: {episode}, values given {self.evaluation_results[-1] / value}")
                 if self.evaluation_results[-1] / value > threshold: 
                     termination = 1
@@ -187,11 +187,12 @@ class DynamicQLearningCounterFactual:
         return self.evaluation_results
 
 
-    def get_average(self, sum_perfomance, step ):
+    def get_average(self, sum_perfomance, step, vi_value ):
         agent_value = self.get_agent_value()
         self.fill_vtable
         sum_perfomance += agent_value
         value = sum_perfomance/step
+        value = value/ vi_value
         # print(f"Episode {step}: Agent Value = {agent_value}")
         self.evaluation_results.append(value)
         return sum_perfomance
