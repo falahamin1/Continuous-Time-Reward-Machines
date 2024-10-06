@@ -178,7 +178,7 @@ class DynamicQLearningCounterFactual:
             if (episode + 1) % self.UPDATE_FREQUENCY == 0:
                 sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY, value)
                 # print(f"episode: {episode}, values given {self.evaluation_results[-1] / value}")
-                if self.evaluation_results[-1] / value > threshold: 
+                if self.evaluation_results[-1]> threshold: 
                     termination = 1
                     break
             # print(f"Completed episode {episode}")

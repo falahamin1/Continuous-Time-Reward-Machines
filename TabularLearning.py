@@ -196,7 +196,7 @@ class DynamicQLearning:
                 # print(f"episode: {episode}, values given {self.evaluation_results[-1] / value}")
                 
                 # print("epsilon value:", self.epsilon)
-                if self.evaluation_results[-1] / value > threshold:
+                if self.evaluation_results[-1]  > threshold:
                     termination = 1
                     break
             episode += 1
