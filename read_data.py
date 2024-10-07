@@ -44,7 +44,7 @@ def save_plot( all_classic, all_counter, all_counter_sampling):
 
         # Plot for counterfactual sampling data with the sampling size in the legend
             plt.plot(np.arange(sampling_50.shape[0]) * 50, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
-            # plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
+            plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
             j+=1
 
     # Add labels and title

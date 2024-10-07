@@ -11,7 +11,7 @@ class DynamicQLearningCounterFactual:
         self.decay_rate = decay_rate
         self.epsilon = self.max_epsilon
         self.UPDATE_FREQUENCY = UPDATE_FREQUENCY
-        self.evaluation_results = []
+        self.evaluation_results = [0]
         self.epsilon_decay = decay_rate
         self.env = environment
         self.ctrm = ctrm
