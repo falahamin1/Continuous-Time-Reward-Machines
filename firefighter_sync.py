@@ -17,7 +17,7 @@ class FireFighterCarSynchEnv():
         self.actionsize = 16
         self.state = self.state1 + self.state2 
         self.initstate = self.initstate1 + self.initstate2 # No turn variable, synchronous transition
-        self.states = (rows ** 2) * (cols **2) 
+        self.states = (rows ** 2) * (cols **2) * (2 ** 2)
         self.probability = probability
 
     def next_states(self, s):   #provides the set of next states of every action for value iteration
