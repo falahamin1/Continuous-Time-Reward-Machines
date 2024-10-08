@@ -66,6 +66,9 @@ class PathPlanning():
                         state = nstate + nstate1 + nstate2 + nstate3 + nstate4
                         next_states.append(state)
         return next_states
+    
+    
+    
     def convert_action(self,action):
         if 0 <= action <= 255:
             first_value = action // (4 * 4 * 4)  # First value (highest place)
@@ -79,111 +82,158 @@ class PathPlanning():
     def next_state(self, state, action): # provides a dictionary that gives the next state of an action and also the probability of transition
         action1, action2, action3, action4 = self.convert_action(action)
         next_states = {} 
+        progress = [1,1,1,1]
+        probability = 1
         # next_states[state] = 1 - (self.probability * self.probability)
-        x,y,target = state[:3]
-        x1,y1,target1 = state[3:6]
-        x2,y2,target2 = state[6:9]
-        x3,y3,target3 = state[9:12]
-        if target == 1: 
-            next_state1 = (x,y,target)
-            probability1 = 1
-        else:
-            xn1,yn1 = self.env1.next_state((x,y), action1)
-            if (xn1, yn1) == self.target1:
-                    t = 1
-            else:
-                    t = 0
-            next_state1 = (xn1,yn1,t)
-            probability1 = self.probability
-        
-        if target1 == 1: 
-            next_state2 = (x1,y1,target1)
-            probability2 = 1
-        else: 
-            xn2,yn2 = self.env2.next_state((x1,y1), action2)
-            if (xn2, yn2) == self.target2:
-                    t = 1
-            else:
-                    t = 0
-            next_state2 = (xn2,yn2,t)
-            probability2 = self.probability
-
-        if target2 == 1: 
-            next_state3 = (x2,y2,target2)
-            probability3 = 1
-        else: 
-            xn3,yn3 = self.env3.next_state((x2,y2), action3)
-            if (xn3, yn3) == self.target3:
-                    t = 1
-            else:
-                    t = 0
-            next_state2 = (xn3,yn3,t)
-            probability3 = self.probability
-        
-        if target3 == 1: 
-            next_state4 = (x3,y3,target3)
-            probability4 = 1
-        else: 
-            xn4,yn4 = self.env4.next_state((x3,y3), action3)
-            if (xn4, yn4) == self.target4:
-                    t = 1
-            else:
-                    t = 0
-            next_state2 = (xn4,yn4,t)
-            probability4 = 1 - self.probability
-        
-        next_state = next_state1 + next_state2 + next_state3 + next_state4
-        target_sum = target1 + target2 + target3 + target4
-        if target_sum == 0: 
-            next_states[state] = 1 - (self.probability ** 4)
-        
-
-
-
-
-
-
-
+        self.fill_next_state(next_states, state, action, progress, probability)
+        total_prob = sum(next_states.values())  # Sum all the values in the dictionary
+    
+    # Check if the total is approximately 1 (due to floating-point precision issues)
+        if abs(total_prob - 1) < 1e-6:
+            print("Wrong distribution:",total_prob)       
         return next_states
+
+    def fill_next_state(self, next_states, state,action, progress, probability):
+        action1, action2, action3, action4 = self.convert_action(action)
+        if progress[3] == 0: #all transitions done 
+            self.add_probability_to_key(next_states, state, probability)
+        elif progress[2] == 0: 
+            progress[3] = 0
+            x4,y4,t4 = state[9:12]
+            if t4 == 1:
+                self.fill_next_state(next_states,state,action, progress,probability)
+            else:
+                xn4,yn4 = self.env4.next_state((x4,y4), action4)
+                if (xn4, yn4) == self.target4:
+                    tn4 = 1
+                else:
+                    tn4 = 0
+                self.fill_next_state(next_states, state[:9] + (x4,y4,t4), progress, probability * (1-self.probability))
+                self.fill_next_state(next_states, state[:9] + (xn4,yn4,tn4), progress, probability * (self.probability))
+        elif progress[1] == 0:
+            progress[2] = 0
+            x3,y3,t3 = state[6:9]
+            if t3 == 1:
+                self.fill_next_state(next_states,state,action, progress,probability)
+            else:
+                xn3,yn3 = self.env3.next_state((x3,y3), action3)
+                if (xn3, yn3) == self.target3:
+                    tn3 = 1
+                else:
+                    tn3 = 0
+                self.fill_next_state(next_states, state[:6] + (x3,y3,t3) + state[9:12], progress, probability * (1-self.probability))
+                self.fill_next_state(next_states, state[:6] + (xn3,yn3,tn3)+ state[9:12], progress, probability * (self.probability))
+        
+        elif progress[0] == 0:
+
+            progress[1] = 0
+            x2,y2,t2 = state[3:6]
+            if t2 == 1:
+                self.fill_next_state(next_states,state,action, progress,probability)
+            else:
+                xn2,yn2 = self.env2.next_state((x2,y2), action2)
+                if (xn2, yn2) == self.target2:
+                    tn2 = 1
+                else:
+                    tn2 = 0
+                self.fill_next_state(next_states, state[:3] + (x2,y2,t2) + state[6:12], progress, probability * (1-self.probability))
+                self.fill_next_state(next_states, state[:3] + (xn2,yn2,tn2)+ state[6:12], progress, probability * (self.probability))
+        
+        else:
+
+            progress[0] = 0
+            x1,y1,t1 = state[:3]
+            if t1 == 1:
+                self.fill_next_state(next_states,state,action, progress,probability)
+            else:
+                xn1,yn1 = self.env1.next_state((x1,y1), action1)
+                if (xn1, yn1) == self.target1:
+                    tn1 = 1
+                else:
+                    tn1 = 0
+                self.fill_next_state(next_states, (x1,y1,t1) + state[3:12], progress, probability * (1-self.probability))
+                self.fill_next_state(next_states, (xn1,yn1,tn1)+ state[3:12], progress, probability * (self.probability))
+
+
+
+                
+
+
+
+    def add_probability_to_key(self,next_states, key, value):
+        if key in next_states:
+            next_states[key] += value  # Add to the existing value
+        else:
+            next_states[key] = value  # Set the new value
+            
             
         
         
 
     def step(self, action, rate):
-        action1, action2 = self.convert_action(action)
-        x,y,target = self.state1
-        x1,y1,target1 = self.state2
-        if target == 1: 
-            next_state = self.state1
+        action1, action2, action3, action4 = self.convert_action(action)
+        x1,y1,target1 = self.state1
+        x2,y2,target2 = self.state2
+        x3,y3,target3 = self.state3
+        x4,y4,target4 = self.state4
+        if target1 == 1: 
+            next_state1 = self.state1
             time1 = 0
         else: 
-            xn, yn, time1 = self.env1.step((x,y), action1, rate)
-            if (xn,yn) == self.target1:
-                target = 1
-            else: 
-                target = 0
-            next_state = (xn,yn,target)
-        if target1 == 1: 
-            next_state1 = self.state2
-            time2 = 0
-        else: 
-            xn1, yn1, time2 = self.env2.step((x1,y1), action2, rate)
-            if (xn1,yn1) == self.target2:
+            xn1, yn1, time1 = self.env1.step((x,y), action1, rate)
+            if (xn1,yn1) == self.target1:
                 target1 = 1
             else: 
                 target1 = 0
-            next_state1 = (xn1,yn1,target1)
-        new_state = next_state + next_state1
+            next_state1 = (xn,yn,target)
+        if target2 == 1: 
+            next_state2 = self.state2
+            time2 = 0
+        else: 
+            xn2, yn2, time2 = self.env2.step((x2,y2), action2, rate)
+            if (xn2,yn2) == self.target2:
+                target2 = 1
+            else: 
+                target2 = 0
+            next_state2 = (xn2,yn2,target2)
+        
+        if target3 == 1: 
+            next_state3 = self.state3
+            time3 = 0
+        else: 
+            xn3, yn3, time3 = self.env3.step((x3,y3), action3, rate)
+            if (xn3,yn3) == self.target3:
+                target3 = 1
+            else: 
+                target3 = 0
+            next_state3 = (xn3,yn3,target3)
+
+        if target4 == 1: 
+            next_state4 = self.state4
+            time4 = 0
+        else: 
+            xn4, yn4, time4 = self.env4.step((x4,y4), action4, rate)
+            if (xn4,yn4) == self.target4:
+                target4 = 1
+            else: 
+                target4 = 0
+            next_state4 = (xn4,yn4,target4)
+
+        new_state = next_state1 + next_state2 + next_state3 + next_state4
         self.state = new_state
-        self.state1 = next_state
-        self.state2 = next_state1
-        time = max(time1, time2)
+        self.state1 = next_state1
+        self.state2 = next_state2
+        self.state3 = next_state3
+        self.state4 = next_state4
+        time = max(time1, time2,time3,time4)
         return self.state, time
 
 
     def reset(self):
         self.state1 = self.initstate1
-        self.state2 = self.initstate2   # Reset to initial state
+        self.state2 = self.initstate2 
+        self.state3 = self.initstate3   # Reset to initial state
+        self.state4 = self.initstate4
         self.time = 0
-        self.state = self.state1 + self.state2 
+        self.state = self.state1 + self.state2 + self.state3 + self.state4
         return self.state

@@ -324,7 +324,7 @@ def main():
     parser = argparse.ArgumentParser(description="Comparison class input arguments")
 
     # Add arguments
-    parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map, firefighter_synch)")
+    parser.add_argument("--env", type=str, default="default_env", help="Environment name (firefighter-car, cop-car, treasure-map, firefighter-synch)")
     parser.add_argument("--specify_dimension", type=str, choices=["yes", "no"], default="no", help="Specify dimensions (yes/no)")
     parser.add_argument("--deep_rl", type=str, choices=["yes", "no"], default="yes", help="Specify if Deep RL needs to be used")
     parser.add_argument("--rows", type=int, default=None, help="Number of rows if dimensions are specified")

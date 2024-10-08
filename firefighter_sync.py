@@ -91,6 +91,63 @@ class FireFighterCarSynchEnv():
                 next_states[next_state] = self.probability * self.probability
     
         return next_states
+
+
+    def next_state(self, state, action): # provides a dictionary that gives the next state of an action and also the probability of transition
+        action1, action2 = self.convert_action(action)
+        next_states = {} 
+        # next_states[state] = 1 - (self.probability * self.probability)
+        x,y,target = state[:3]
+        x1,y1,target1 = state[3:6]
+        xn,yn = self.env1.next_state((x,y), action1)
+        xn1,yn1 = self.env2.next_state((x1,y1), action2)
+        if (xn, yn) == self.target1:
+                    tn = 1
+        else:
+                    tn = 0
+        
+        if (xn1, yn1) == self.target2:
+                    tn1 = 1
+        else:
+                    tn1 = 0
+
+
+        if target == 1:
+            if target1 == 1:
+                next_state = (x,y,target,x1,y1,target1)
+                next_states[next_state] = 1
+            else: 
+                next_state = (x,y,target,xn1,yn1,tn1)
+                self.add_probability_to_key(next_states, state, 1-self.probability)
+                self.add_probability_to_key(next_states, next_state, self.probability)
+        else:
+            if target1 == 1: 
+                next_state = (xn,yn,tn,x1,y1,target1)
+                self.add_probability_to_key(next_states, state, 1-self.probability)
+                self.add_probability_to_key(next_states, next_state, self.probability)
+            else:    
+                self.add_probability_to_key(next_states, state, (1 - self.probability) ** 2)
+                self.add_probability_to_key(next_states, (x, y, target, xn1, yn1, tn1), (1 - self.probability) * self.probability)
+                self.add_probability_to_key(next_states, (xn, yn, tn, x1, y1, target1), (1 - self.probability) * self.probability)
+                self.add_probability_to_key(next_states, (xn, yn, tn, xn1, yn1, tn1), self.probability * self.probability)
+        #sanity check
+        total_prob = sum(next_states.values())  # Sum all the values in the dictionary
+    
+        # Check if the total is approximately 1 (due to floating-point precision issues)
+        if abs(total_prob - 1) > 1e-6:
+            print ("Distribution is wrong")
+            for nstate, prob in next_states.items():
+                print(f"next state {nstate}:{prob}")
+                if nstate == state: 
+                    print("THis is the state")
+    
+        return next_states
+
+    def add_probability_to_key(self,next_states, key, value):
+        if key in next_states:
+            next_states[key] += value  # Add to the existing value
+        else:
+            next_states[key] = value  # Set the new value
             
         
         
