@@ -203,19 +203,33 @@ class DynamicQLearningCounterFactualSampling:
         self.ctrm.reset()
         return self.startegy_analaysis()
     
+    # def add_counterfactual_experience(self,ctrm, state, action, next_state, available_actions):
+    #     for _ in range(self.sampling):
+    #         for ctrmstate in ctrm.states:
+    #             rate = ctrm.get_rate_counterfactual(ctrmstate, state)
+    #             if rate is not None:
+    #                 reward, ctrm_nextstate = ctrm.transition_function_counterfactual(ctrmstate, next_state)
+    #                 time = np.random.exponential(scale= 1/rate)
+    #                 if reward  is not None and ctrm_nextstate is not None:
+    #                     previous_state = state + (ctrmstate,)
+    #                     next_state1 = next_state + (ctrm_nextstate,)
+    #                     self.update_q_table(previous_state, action, reward, time, next_state1, available_actions)
+            
     def add_counterfactual_experience(self,ctrm, state, action, next_state, available_actions):
-        for _ in range(self.sampling):
             for ctrmstate in ctrm.states:
-                rate = ctrm.get_rate_counterfactual(ctrmstate, state)
+                avgtime = 0
+                for _ in range(self.sampling):
+                    rate = ctrm.get_rate_counterfactual(ctrmstate, state)
+                    if rate is not None:
+                        time = np.random.exponential(scale= 1/rate)
+                        avgtime += time
+                avgtime = avgtime / self.sampling
                 if rate is not None:
                     reward, ctrm_nextstate = ctrm.transition_function_counterfactual(ctrmstate, next_state)
-                    time = np.random.exponential(scale= 1/rate)
                     if reward  is not None and ctrm_nextstate is not None:
                         previous_state = state + (ctrmstate,)
                         next_state1 = next_state + (ctrm_nextstate,)
-                        self.update_q_table(previous_state, action, reward, time, next_state1, available_actions)
-            
-            
+                        self.update_q_table(previous_state, action, reward, avgtime, next_state1, available_actions)
 
 
 
