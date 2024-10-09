@@ -90,8 +90,8 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
     plt.fill_between(np.arange(classic_50.shape[0]) * 50, classic_25, classic_75, color='orange', alpha=0.3)
     
     # Plot for counterfactual data
-    plt.plot(np.arange(counter_50.shape[0]) * 50, counter_50, color='blue', label='Counterfactual (Median)')
-    plt.fill_between(np.arange(counter_50.shape[0]) * 50, counter_25, counter_75, color='blue', alpha=0.3)
+    # plt.plot(np.arange(counter_50.shape[0]) * 50, counter_50, color='blue', label='Counterfactual (Median)')
+    # plt.fill_between(np.arange(counter_50.shape[0]) * 50, counter_25, counter_75, color='blue', alpha=0.3)
     
     # Now, add plots for each sampling size on the same figure
     colors = ['green', 'purple', 'red', 'brown']  # Different colors for different sampling sizes
@@ -104,14 +104,14 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
         sampling_75 = np.percentile(sampling_data, 75, axis=0)
 
         # Plot for counterfactual sampling data with the sampling size in the legend
-        plt.plot(np.arange(sampling_50.shape[0]) * 50, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
-        plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
+        # plt.plot(np.arange(sampling_50.shape[0]) * 50, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
+        # plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
         j += 1
 
     # Add labels and title
     plt.xlabel('Time Steps')
     plt.ylabel('Performance')
-    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on treasurehunt (tabular)')
+    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on police officer car (tabular)')
     
     # Add a legend
     plt.legend()
@@ -123,7 +123,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
 
 
 # Path to the file you saved earlier
-datafile = 'treasurehunt-server-tabular-data'
+datafile = 'copcar-server-tabular-data'
 
 # Open the file in binary read mode and load the data
 with open(datafile, 'rb') as f:
