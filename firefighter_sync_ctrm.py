@@ -16,7 +16,7 @@ class FireFighterCarSynchCTRM:
     (5, 0): 0.2, (5, 1): 0.06, (5, 2): 0.2, (5, 3): 0.03, (5, 4): 0.03, (5, 5): 0.03, (5, 6): 0.03,
     (6, 0): 0.06, (6, 1): 0.03, (6, 2): 0.2, (6, 3): 0.06, (6, 4): 0.06, (6, 5): 0.2, (6, 6): 0.03
 }
-        self.function2 = {position: round(value * 10, 2) for position, value in self.function1.items()}
+        self.function2 = {position: round(value * 0.3, 2) for position, value in self.function1.items()}
         self.function3 = {position: round(value * 10, 2) for position, value in self.function1.items()}
         # print("New reward machine")
     
