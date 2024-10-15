@@ -29,7 +29,7 @@ class FireFighterCarSynchCTRM:
                 self.state = 2
                 return 0
             else:
-                self.state = 1
+                self.state = 0
                 return 0
 
         elif self.state == 1: 
@@ -43,6 +43,9 @@ class FireFighterCarSynchCTRM:
             if input_state[2] > 0: 
                 self.state = 3
                 return 1
+            else:
+                self.state = 2
+                return 0
         else:
             return None
 

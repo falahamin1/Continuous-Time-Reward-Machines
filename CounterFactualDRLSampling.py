@@ -230,18 +230,22 @@ class DeepRLCounterFactualSampling():
     
     
     def add_counterfactual_experience(self, state, action, next_state):
-        for _ in range(self.sampling): 
             for ctrmstate in self.ctrm.states: # For each state of the CTRM, we add an experience
                 rate = self.ctrm.get_rate_counterfactual(ctrmstate, state)
+                avg_time = 0
+                for _ in range(self.sampling): 
+                    avg_time += np.random.exponential(scale= 1/rate)
+                avg_time = avg_time / self.sampling
+
 
                 if rate is not None:
                     reward, ctrm_nextstate = self.ctrm.transition_function_counterfactual(ctrmstate, next_state)
-                    time = np.random.exponential(scale= 1/rate)
+                    
                     if reward  is not None:
                     
                         previous_state = state + (ctrmstate,)
                         next_state1 = next_state + (ctrm_nextstate,)
-                        self.buffer.add(previous_state, action, reward, time, next_state1)
+                        self.buffer.add(previous_state, action, reward, avg_time, next_state1)
 
         
     

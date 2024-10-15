@@ -22,7 +22,7 @@ import pickle
 
 
 class Comparison:
-    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file,save_data):
+    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file,save_data,method):
         self.env = env
         self.specify_dimension = specify_dimension
         self.deep_rl = deep_rl
@@ -42,6 +42,7 @@ class Comparison:
         self.save_data = save_data
         self.ctrm, self.env_class = self.get_ctrm_env()
         self.value = None
+        self.method = method
 
 #From the input name of environment, this function returns the CTRM and the environment classes 
     def get_ctrm_env(self):
@@ -341,6 +342,7 @@ def main():
     parser.add_argument("--update_frequency", type=int, default=50, help="Update frequency")
     parser.add_argument("--save_file", type=str, default="default_plot", help="filename of the saved plot")
     parser.add_argument("--save_data", type=str, default="default_data", help="filename of the saved data")
+    parser.add_argument("--method", type=str, default="no", help="Only a spcific method (no, counterfactual, classic, counterfactual_sampling)")
 
 
     args = parser.parse_args()
@@ -368,6 +370,7 @@ def main():
         update_frequency=args.update_frequency,
         save_file = args.save_file,
         save_data = args.save_data,
+        method = args.method
     )
     # Display parameters
     comparison.display_parameters()
