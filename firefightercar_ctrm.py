@@ -67,7 +67,7 @@ class FireFighterCarCTRM:
             return reward, next_state
 
 
-    def get_rate_counterfactual(self,ctrmstate, input_state):
+    def get_rate_counterfactual(self,ctrmstate, input_state, action):
         x1, y1, target1, x2, y2, target2, turn = input_state
 
         if turn == 0: 
@@ -83,7 +83,7 @@ class FireFighterCarCTRM:
                 return self.function3[(x2,y2)]
         
 
-    def get_rate(self,input_state):
+    def get_rate(self,input_state, action):
         x1, y1, target1, x2, y2, target2, turn = input_state
         if turn == 0: 
             return self.function2[(x1,y1)]

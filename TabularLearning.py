@@ -51,7 +51,7 @@ class DynamicQLearning:
                 a = self.pick_best_action(state, self.env.actions)
                 ctrm_state = state[-1]     #Get the CTRM state
                 env_state = state[:-1]      # Get the environment state
-                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state) # Gets the rate
+                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state,a) # Gets the rate
                 next_states = self.env.next_state(env_state, a) # Gets the next state of the environment
                 for next_state, probability in next_states.items():
                         action_value = 0
@@ -170,12 +170,10 @@ class DynamicQLearning:
                 # print("Episode:", episode)
             env_state = self.env.reset()
             ctrm_state = self.ctrm.reset()
-            rate = self.ctrm.get_rate(env_state)
             for i in range(max_episode_length):
-                if rate is None:
-                    break
                 available_actions = self.env.actions
                 action = self.choose_action(env_state + (ctrm_state,), available_actions)
+                rate = self.ctrm.get_rate(env_state,action)
                 env_state1, sampled_time = self.env.step(action, rate)
                 # sampled_time = 1/rate
                 reward = self.ctrm.transitionfunction(self.env.state) #transition in the ctrm which gives the new state and the reward
@@ -188,9 +186,7 @@ class DynamicQLearning:
                 
                 env_state = self.env.state
                 ctrm_state = self.ctrm.state
-                rate = self.ctrm.get_rate(env_state)
-                if rate is None: 
-                    break
+                
             if (episode + 1) % self.UPDATE_FREQUENCY == 0:
                 sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY, value)
                 # print(f"episode: {episode}, values given {self.evaluation_results[-1] / value}")

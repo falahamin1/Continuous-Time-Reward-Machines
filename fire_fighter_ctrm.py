@@ -88,7 +88,7 @@ class FireFighterCTRM:
         return reward, next_state
 
 
-    def get_rate_counterfactual(self,ctrmstate, input_state):
+    def get_rate_counterfactual(self,ctrmstate, input_state,action):
         x1, y1, target1, x2, y2, target2, turn = input_state
         if turn == 0: 
             if x1 in {x2, x2 + 1, x2 - 1} and y1 in {y2, y2 + 1, y2 - 1}:
@@ -103,7 +103,7 @@ class FireFighterCTRM:
                 return self.function2[(x2,y2)]
         
 
-    def get_rate(self,input_state):
+    def get_rate(self,input_state,action):
         x1, y1, target1, x2, y2, target2, turn = input_state
         if turn == 0: 
             if x1 in {x2, x2 + 1, x2 - 1} and y1 in {y2, y2 + 1, y2 - 1}:

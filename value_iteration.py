@@ -55,7 +55,7 @@ class ValueIteration:
                 for a in self.env.actions: 
                     ctrm_state = state[-1]     #Get the CTRM state
                     env_state = state[:-1]      # Get the environment state
-                    rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state) # Gets the rate
+                    rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state,a) # Gets the rate
                     next_states = self.env.next_state(env_state, a) # Gets the next state of the environment
                     
                     for next_state, probability in next_states.items():

@@ -7,14 +7,14 @@ class CopCarCTRM:
         self.initstate = 0 #initial state
         self.state = self.initstate
         self.function1 = {
-    (0, 0): 0.03 , (0, 1): 0.03, (0, 2): 0.03, (0, 3): 0.2, (0, 4): 0.06, (0, 5): 0.06, (0, 6): 0.06,
-    (1, 0): 0.03, (1, 1): 0.2, (1, 2): 0.2, (1, 3): 0.03, (1, 4): 0.03, (1, 5): 0.03, (1, 6): 0.03,
-    (2, 0): 0.03, (2, 1): 0.06, (2, 2): 0.2, (2, 3): 0.03, (2, 4): 0.03, (2, 5): 0.06, (2, 6): 0.03,
-    (3, 0): 0.03, (3, 1): 0.2, (3, 2): 0.06, (3, 3): 0.06, (3, 4): 0.2, (3, 5): 0.06, (3, 6): 0.03,
-    (4, 0): 0.03, (4, 1): 0.06, (4, 2): 0.2, (4, 3): 0.06, (4, 4): 0.06, (4, 5): 0.2, (4, 6): 0.2,
-    (5, 0): 0.2, (5, 1): 0.06, (5, 2): 0.2, (5, 3): 0.03, (5, 4): 0.03, (5, 5): 0.03, (5, 6): 0.03,
-    (6, 0): 0.06, (6, 1): 0.03, (6, 2): 0.2, (6, 3): 0.06, (6, 4): 0.06, (6, 5): 0.2, (6, 6): 0.03
-}
+            (0, 0, 0): 0.03, (0, 1, 0): 0.03, (0, 2, 0): 0.03, (0, 3, 0): 0.2, (0, 4, 0): 0.06, (0, 5, 0): 0.06, (0, 6, 0): 0.06,
+            (1, 0, 1): 0.03, (1, 1, 1): 0.2, (1, 2, 1): 0.2, (1, 3, 1): 0.03, (1, 4, 1): 0.03, (1, 5, 1): 0.03, (1, 6, 1): 0.03,
+            (2, 0, 2): 0.03, (2, 1, 2): 0.06, (2, 2, 2): 0.2, (2, 3, 2): 0.03, (2, 4, 2): 0.03, (2, 5, 2): 0.06, (2, 6, 2): 0.03,
+            (3, 0, 3): 0.03, (3, 1, 3): 0.2, (3, 2, 3): 0.06, (3, 3, 3): 0.06, (3, 4, 3): 0.2, (3, 5, 3): 0.06, (3, 6, 3): 0.03,
+            (4, 0, 0): 0.03, (4, 1, 0): 0.06, (4, 2, 0): 0.2, (4, 3, 0): 0.06, (4, 4, 0): 0.06, (4, 5, 0): 0.2, (4, 6, 0): 0.2,
+            (5, 0, 1): 0.2, (5, 1, 1): 0.06, (5, 2, 1): 0.2, (5, 3, 1): 0.03, (5, 4, 1): 0.03, (5, 5, 1): 0.03, (5, 6, 1): 0.03,
+            (6, 0, 2): 0.06, (6, 1, 2): 0.03, (6, 2, 2): 0.2, (6, 3, 2): 0.06, (6, 4, 2): 0.06, (6, 5, 2): 0.2, (6, 6, 2): 0.03
+        }
         self.function1 = {position: round(value * 3, 2) for position, value in self.function1.items()}
         self.function2 = {position: round(value * 10, 2) for position, value in self.function1.items()}
         # print("New reward machine")
@@ -56,19 +56,19 @@ class CopCarCTRM:
             return None, None
 
 
-    def get_rate_counterfactual(self,ctrmstate, input_state):
-        state = (input_state[0], input_state[1])
+    def get_rate_counterfactual(self,ctrmstate, input_state, action):
+        state = (input_state[0], input_state[1], action)
         if ctrmstate == 0:
             return self.function1[state]
         elif ctrmstate == 1: 
             return self.function2[state]
 
-    def get_rate(self,input_state):
+    def get_rate(self,input_state, action):
         # print("Input state is:", input_state)
         if self.state == 0:
-            return self.function1[(input_state[0], input_state[1])]
+            return self.function1[(input_state[0], input_state[1], action)]
         elif self.state == 1: 
-            return self.function2[(input_state[0], input_state[1])]
+            return self.function2[(input_state[0], input_state[1], action)]
         else: 
             return None
     

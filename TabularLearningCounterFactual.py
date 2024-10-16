@@ -152,12 +152,11 @@ class DynamicQLearningCounterFactual:
             #     print("Episode:", episode)
             env_state = self.env.reset()
             ctrm_state = self.ctrm.reset()
-            rate = self.ctrm.get_rate(env_state)
+            
             for i in range(max_episode_length):
-                if rate is None:
-                    break
                 available_actions = self.env.actions
                 action = self.choose_action(env_state + (ctrm_state,), available_actions)
+                rate = self.ctrm.get_rate(env_state,action)
                 env_state1, sampled_time = self.env.step(action, rate)
                 reward = self.ctrm.transitionfunction(self.env.state) #transition in the ctrm which gives the new state and the reward
                 if reward is None:
@@ -172,9 +171,7 @@ class DynamicQLearningCounterFactual:
                 
                 env_state = self.env.state
                 ctrm_state = self.ctrm.state
-                rate = self.ctrm.get_rate(env_state)
-                if rate is None: 
-                    break
+                
             if (episode + 1) % self.UPDATE_FREQUENCY == 0:
                 sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY, value)
                 # print(f"episode: {episode}, values given {self.evaluation_results[-1] / value}")
@@ -205,7 +202,7 @@ class DynamicQLearningCounterFactual:
     
     def add_counterfactual_experience(self,ctrm, state, action, next_state, available_actions):
         for ctrmstate in ctrm.states:
-            rate = ctrm.get_rate_counterfactual(ctrmstate, state)
+            rate = ctrm.get_rate_counterfactual(ctrmstate, state,action)
             if rate is not None:
                 reward, ctrm_nextstate = ctrm.transition_function_counterfactual(ctrmstate, next_state)
                 time = 1/rate

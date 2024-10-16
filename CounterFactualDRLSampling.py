@@ -84,7 +84,7 @@ class DeepRLCounterFactualSampling():
                 a = self.agent.get_best_action(state)
                 ctrm_state = state[-1]     #Get the CTRM state
                 env_state = state[:-1]      # Get the environment state
-                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state) # Gets the rate
+                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state, a) # Gets the rate
                 next_states = self.env.next_state(env_state, a) # Gets the next state of the environment
                 for next_state, probability in next_states.items():
                         action_value = 0
@@ -231,14 +231,12 @@ class DeepRLCounterFactualSampling():
     
     def add_counterfactual_experience(self, state, action, next_state):
             for ctrmstate in self.ctrm.states: # For each state of the CTRM, we add an experience
-                rate = self.ctrm.get_rate_counterfactual(ctrmstate, state)
+                rate = self.ctrm.get_rate_counterfactual(ctrmstate, state, action)
                 avg_time = 0
-                for _ in range(self.sampling): 
-                    avg_time += np.random.exponential(scale= 1/rate)
-                avg_time = avg_time / self.sampling
-
-
                 if rate is not None:
+                    for _ in range(self.sampling): 
+                        avg_time += np.random.exponential(scale= 1/rate)
+                    avg_time = avg_time / self.sampling
                     reward, ctrm_nextstate = self.ctrm.transition_function_counterfactual(ctrmstate, next_state)
                     
                     if reward  is not None:

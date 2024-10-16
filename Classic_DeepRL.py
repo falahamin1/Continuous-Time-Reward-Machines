@@ -78,7 +78,7 @@ class DeepRLClassic():
                 a = self.agent.get_best_action(state)
                 ctrm_state = state[-1]     #Get the CTRM state
                 env_state = state[:-1]      # Get the environment state
-                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state) # Gets the rate
+                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state, a) # Gets the rate
                 next_states = self.env.next_state(env_state, a) # Gets the next state of the environment
                 for next_state, probability in next_states.items():
                         action_value = 0
@@ -201,13 +201,14 @@ class DeepRLClassic():
             env_state = self.env.state
             # print("Initial state:", env_state)
             ctrm_state = self.ctrm.state
-            rate = self.ctrm.get_rate(env_state)
+            
             
 
             for j in range(self.max_episode_length):
                 if rate is None:
                     break
                 action = self.agent.epsilon_greedy_policy(env_state + (ctrm_state,),self.epsilon) #epsilon greedy action
+                rate = self.ctrm.get_rate(env_state, action)
                 env_state1, sampled_time = self.env.step(action=action, rate= rate)
                 # sampled_time = 1/rate #Changing sampled time to get consistency with counterfactual
                 # print("Next state:", env_state1)
@@ -229,7 +230,7 @@ class DeepRLClassic():
                 #     break
                 env_state = self.env.state
                 ctrm_state = self.ctrm.state
-                rate = self.ctrm.get_rate(env_state)
+                # rate = self.ctrm.get_rate(env_state)
             if (i + 1) % self.UPDATE_FREQUENCY == 0:
                 sum_perfomance = self.get_average(sum_perfomance, (i+1)/self.UPDATE_FREQUENCY, value)
                 # print(f"episode: {i}, values given {self.evaluation_results[-1] / value}")

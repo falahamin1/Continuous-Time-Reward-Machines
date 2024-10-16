@@ -6,7 +6,12 @@ class TreasureMapCTRM:
         self.totalstates = 7
         self.initstate = 0 #initial state
         self.state = self.initstate
-        self.function1 = {
+        self.function1 = self.generate_rates()
+        # self.function1 = {position: round(value * 3, 2) for position, value in self.function1.items()}
+        self.function2 = {position: round(value * 5, 2) for position, value in self.function1.items()}
+    
+    def generate_rates(self):
+        function1 = {
     (0, 0): 0.06,(0, 1): 0.2,(0, 2): 0.03,(0, 3): 0.2,(0, 4): 0.06,(0, 5): 0.06,
  (0, 6): 0.03,(0, 7): 0.06,(0, 8): 0.03,(0, 9): 0.06,(0, 10): 0.06,(0, 11): 0.06,(0, 12): 0.06,(1, 0): 0.03,(1, 1): 0.03,(1, 2): 0.03,
  (1, 3): 0.06,(1, 4): 0.2,(1, 5): 0.2,(1, 6): 0.06,(1, 7): 0.03,(1, 8): 0.2,(1, 9): 0.03,(1, 10): 0.06,(1, 11): 0.2,(1, 12): 0.2,
@@ -23,8 +28,17 @@ class TreasureMapCTRM:
  (9, 12): 0.03,(10, 0): 0.2,(10, 1): 0.2,(10, 2): 0.2,(10, 3): 0.06,(10, 4): 0.06,(10, 5): 0.2,(10, 6): 0.2,(10, 7): 0.2,(10, 8): 0.03,(10, 9): 0.06,
  (10, 10): 0.2,(10, 11): 0.2,(10, 12): 0.2,(11, 0): 0.06,(11, 1): 0.06,(11, 2): 0.06,(11, 3): 0.2,(11, 4): 0.2,(11, 5): 0.06,(11, 6): 0.2,(11, 7): 0.06,(11, 8): 0.2,(11, 9): 0.03,(11, 10): 0.06,(11, 11): 0.2,
  (11, 12): 0.03,(12, 0): 0.03,(12, 1): 0.06,(12, 2): 0.2,(12, 3): 0.06,(12, 4): 0.2,(12, 5): 0.06,(12, 6): 0.03,(12, 7): 0.06,(12, 8): 0.2,(12, 9): 0.03,(12, 10): 0.03,(12, 11): 0.06,(12, 12): 0.03}
-        self.function1 = {position: round(value * 3, 2) for position, value in self.function1.items()}
-        self.function2 = {position: round(value * 5, 2) for position, value in self.function1.items()}
+        rates_with_actions = {}
+        for (state1, state2), base_value in function1.items():
+            for action in self.actions:
+                rates_with_actions[(state1, state2, action)] = self.deterministic_transformation(base_value, action)
+        
+        return rates_with_actions
+
+    def deterministic_transformation(self, base_value, action):
+        return round(base_value * (1 + 0.05 * action), 2)
+
+
   # Ordering of atomic propositions :   map, tool, vehicle, treasure, jeweller
     def transitionfunction(self, input_state): #Takes the transition in the reward machine and gives the reward
         if self.state == 0: 
@@ -119,8 +133,8 @@ class TreasureMapCTRM:
         return reward, next_state
 
 
-    def get_rate_counterfactual(self,ctrmstate, input_state):
-        state = (input_state[0], input_state[1])
+    def get_rate_counterfactual(self,ctrmstate, input_state, action):
+        state = (input_state[0], input_state[1], action)
         if ctrmstate == 3 or ctrmstate == 4:
             return self.function2[state]
         elif ctrmstate == 6: 
@@ -128,14 +142,14 @@ class TreasureMapCTRM:
         else: 
             return self.function1[state]
 
-    def get_rate(self,input_state):
+    def get_rate(self,input_state, action):
         # print("Input state is:", input_state)
         if self.state == 3 or self.state == 4:
-            return self.function2[(input_state[0], input_state[1])]
+            return self.function2[(input_state[0], input_state[1],action)]
         elif self.state ==6: 
             return None
         else:
-            return self.function1[(input_state[0], input_state[1])]
+            return self.function1[(input_state[0], input_state[1],action)]
     
 
 
