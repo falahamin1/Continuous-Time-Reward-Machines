@@ -2,7 +2,7 @@ import numpy as np
 import math
 from collections import deque
 class DynamicQLearning:
-    def __init__(self, alpha=0.01, gamma=0.001, epsilon=1, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
+    def __init__(self, alpha=0.01, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
         self.q_table = {}
         self.alpha = alpha
         self.gamma = gamma
@@ -174,6 +174,8 @@ class DynamicQLearning:
                 available_actions = self.env.actions
                 action = self.choose_action(env_state + (ctrm_state,), available_actions)
                 rate = self.ctrm.get_rate(env_state,action)
+                if rate is None:
+                    break
                 env_state1, sampled_time = self.env.step(action, rate)
                 # sampled_time = 1/rate
                 reward = self.ctrm.transitionfunction(self.env.state) #transition in the ctrm which gives the new state and the reward

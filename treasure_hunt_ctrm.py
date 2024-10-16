@@ -3,11 +3,12 @@ import numpy as np
 class TreasureMapCTRM:
     def __init__(self):
         self.states = [0,1,2,3,4,5,6]
+        self.actions = [0,1,2,3]
         self.totalstates = 7
         self.initstate = 0 #initial state
         self.state = self.initstate
         self.function1 = self.generate_rates()
-        # self.function1 = {position: round(value * 3, 2) for position, value in self.function1.items()}
+        self.function1 = {position: round(value * 0.04, 3) for position, value in self.function1.items()}
         self.function2 = {position: round(value * 5, 2) for position, value in self.function1.items()}
     
     def generate_rates(self):

@@ -17,5 +17,5 @@ module load anaconda
 conda activate amfa-custom-env
 
 # Run the Python script with the given arguments
-python3 Comparison.py --env cop-car --specify_dimension yes --rows 7 --columns 7 --runs 20 --threshold 0.9 --max_episodes 80000 --save_file copcar-server-tabular --buffer_size 50000 --save_data copcar-server-tabular-data --deep_rl no
+python3 Comparison.py --env cop-car --specify_dimension yes --rows 7 --columns 7 --runs 20 --threshold 0.9 --max_episodes 1000 --save_file copcar-server-tabular --buffer_size 50000 --save_data copcar-server-tabular-data --deep_rl no
 

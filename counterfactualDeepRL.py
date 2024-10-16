@@ -197,6 +197,8 @@ class DeepRLCounterFactual():
             for j in range(self.max_episode_length): 
                 action = self.agent.epsilon_greedy_policy(env_state + (ctrm_state,),self.epsilon) #epsilon greedy action
                 rate = self.ctrm.get_rate(env_state, action)
+                if rate is None: 
+                    break
                 env_state1, sampled_time = self.env.step(action=action, rate= rate)
                 reward = self.ctrm.transitionfunction(env_state1) #transition in the ctrm which gives the reward
                 if reward is None: 

@@ -3,22 +3,38 @@ import numpy as np
 class CopCarCTRM:
     def __init__(self):
         self.states = [0,1,2]
+        self.actions = [0,1,2,3]
         self.totalstates = 3
         self.initstate = 0 #initial state
         self.state = self.initstate
-        self.function1 = {
-            (0, 0, 0): 0.03, (0, 1, 0): 0.03, (0, 2, 0): 0.03, (0, 3, 0): 0.2, (0, 4, 0): 0.06, (0, 5, 0): 0.06, (0, 6, 0): 0.06,
-            (1, 0, 1): 0.03, (1, 1, 1): 0.2, (1, 2, 1): 0.2, (1, 3, 1): 0.03, (1, 4, 1): 0.03, (1, 5, 1): 0.03, (1, 6, 1): 0.03,
-            (2, 0, 2): 0.03, (2, 1, 2): 0.06, (2, 2, 2): 0.2, (2, 3, 2): 0.03, (2, 4, 2): 0.03, (2, 5, 2): 0.06, (2, 6, 2): 0.03,
-            (3, 0, 3): 0.03, (3, 1, 3): 0.2, (3, 2, 3): 0.06, (3, 3, 3): 0.06, (3, 4, 3): 0.2, (3, 5, 3): 0.06, (3, 6, 3): 0.03,
-            (4, 0, 0): 0.03, (4, 1, 0): 0.06, (4, 2, 0): 0.2, (4, 3, 0): 0.06, (4, 4, 0): 0.06, (4, 5, 0): 0.2, (4, 6, 0): 0.2,
-            (5, 0, 1): 0.2, (5, 1, 1): 0.06, (5, 2, 1): 0.2, (5, 3, 1): 0.03, (5, 4, 1): 0.03, (5, 5, 1): 0.03, (5, 6, 1): 0.03,
-            (6, 0, 2): 0.06, (6, 1, 2): 0.03, (6, 2, 2): 0.2, (6, 3, 2): 0.06, (6, 4, 2): 0.06, (6, 5, 2): 0.2, (6, 6, 2): 0.03
-        }
-        self.function1 = {position: round(value * 3, 2) for position, value in self.function1.items()}
+        self.function1 = self.generate_rates()
+        self.function1 = {position: round(value * 0.3, 3) for position, value in self.function1.items()}
         self.function2 = {position: round(value * 10, 2) for position, value in self.function1.items()}
         # print("New reward machine")
     
+
+
+    def generate_rates(self):
+        function1 = {
+    (0, 0): 0.03 , (0, 1): 0.03, (0, 2): 0.03, (0, 3): 0.2, (0, 4): 0.06, (0, 5): 0.06, (0, 6): 0.06,
+    (1, 0): 0.03, (1, 1): 0.2, (1, 2): 0.2, (1, 3): 0.03, (1, 4): 0.03, (1, 5): 0.03, (1, 6): 0.03,
+    (2, 0): 0.03, (2, 1): 0.06, (2, 2): 0.2, (2, 3): 0.03, (2, 4): 0.03, (2, 5): 0.06, (2, 6): 0.03,
+    (3, 0): 0.03, (3, 1): 0.2, (3, 2): 0.06, (3, 3): 0.06, (3, 4): 0.2, (3, 5): 0.06, (3, 6): 0.03,
+    (4, 0): 0.03, (4, 1): 0.06, (4, 2): 0.2, (4, 3): 0.06, (4, 4): 0.06, (4, 5): 0.2, (4, 6): 0.2,
+    (5, 0): 0.2, (5, 1): 0.06, (5, 2): 0.2, (5, 3): 0.03, (5, 4): 0.03, (5, 5): 0.03, (5, 6): 0.03,
+    (6, 0): 0.06, (6, 1): 0.03, (6, 2): 0.2, (6, 3): 0.06, (6, 4): 0.06, (6, 5): 0.2, (6, 6): 0.03
+}
+        rates_with_actions = {}
+        for (state1, state2), base_value in function1.items():
+            for action in self.actions:
+                rates_with_actions[(state1, state2, action)] = self.deterministic_transformation(base_value, action)
+        
+        return rates_with_actions
+
+    def deterministic_transformation(self, base_value, action):
+        return round(base_value * (1 + 0.1 * action), 2)
+
+
     def transitionfunction(self, input_state): #Takes the transition in the reward machine and gives the reward
         if self.state == 0: 
             if input_state[2] > 0: 

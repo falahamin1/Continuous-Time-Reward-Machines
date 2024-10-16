@@ -3,11 +3,18 @@ import numpy as np
 class FireFighterCarSynchCTRM:
     def __init__(self):
         self.states = [0,1,2,3]
+        self.actions = list(range(16))
         self.totalstates = 3
         self.initstate = 0 #initial state
         self.finalstate = 2
         self.state = self.initstate
-        self.function1 = {
+        self.function1 = self.generate_rates()
+        self.function2 = {position: round(value * 0.1, 3) for position, value in self.function1.items()}
+        self.function3 = {position: round(value * 10, 3) for position, value in self.function1.items()}
+        # print("New reward machine")
+    
+    def generate_rates(self):
+        function1 =  {
     (0, 0): 0.03 , (0, 1): 0.03, (0, 2): 0.03, (0, 3): 0.2, (0, 4): 0.06, (0, 5): 0.06, (0, 6): 0.06,
     (1, 0): 0.03, (1, 1): 0.2, (1, 2): 0.2, (1, 3): 0.03, (1, 4): 0.03, (1, 5): 0.03, (1, 6): 0.03,
     (2, 0): 0.03, (2, 1): 0.06, (2, 2): 0.2, (2, 3): 0.03, (2, 4): 0.03, (2, 5): 0.06, (2, 6): 0.03,
@@ -16,10 +23,16 @@ class FireFighterCarSynchCTRM:
     (5, 0): 0.2, (5, 1): 0.06, (5, 2): 0.2, (5, 3): 0.03, (5, 4): 0.03, (5, 5): 0.03, (5, 6): 0.03,
     (6, 0): 0.06, (6, 1): 0.03, (6, 2): 0.2, (6, 3): 0.06, (6, 4): 0.06, (6, 5): 0.2, (6, 6): 0.03
 }
-        self.function2 = {position: round(value * 0.1, 3) for position, value in self.function1.items()}
-        self.function3 = {position: round(value * 10, 3) for position, value in self.function1.items()}
-        # print("New reward machine")
-    
+        rates_with_actions = {}
+        for (state1, state2), base_value in function1.items():
+            for action in self.actions:
+                rates_with_actions[(state1, state2, action)] = self.deterministic_transformation(base_value, action)
+        
+        return rates_with_actions
+
+    def deterministic_transformation(self, base_value, action):
+        return round(base_value * (1 + 0.25 * action), 2)
+
     def transitionfunction(self, input_state): #Takes the transition in the reward machine and gives the reward
         if self.state == 0: 
             if input_state[2] > 0: #checks if player 1 has reached the target
@@ -91,14 +104,14 @@ class FireFighterCarSynchCTRM:
 
     def get_rate_counterfactual(self,ctrmstate, input_state, action):
         x1, y1, target1, x2, y2, target2 = input_state
-        rate1 = self.function2[(x1,y1)]
+        rate1 = self.function2[(x1,y1,action)]
         if ctrmstate == 0:
                 if x2 == x1 or y2 == y1: #Car in traffic
-                    rate2 = self.function1[(x2,y2)]
+                    rate2 = self.function1[(x2,y2,action)]
                 else: 
-                    rate2 = self.function3[(x2,y2)]
+                    rate2 = self.function3[(x2,y2,action)]
         else: 
-                rate2 =  self.function3[(x2,y2)]
+                rate2 =  self.function3[(x2,y2,action)]
         rate = min(rate1,rate2)
         return rate
         
@@ -106,14 +119,14 @@ class FireFighterCarSynchCTRM:
     def get_rate(self,input_state, action):
         # print(f"Length of input_state: {len(input_state)}")
         x1, y1, target1, x2, y2, target2 = input_state
-        rate1 = self.function2[(x1,y1)]
+        rate1 = self.function2[(x1,y1,action)]
         if self.state == 0:
                 if x2 == x1 or y2 == y1: #Car in traffic
-                    rate2 = self.function1[(x2,y2)]
+                    rate2 = self.function1[(x2,y2,action)]
                 else: 
-                    rate2 = self.function3[(x2,y2)]
+                    rate2 = self.function3[(x2,y2,action)]
         else: 
-                rate2 =  self.function3[(x2,y2)]
+                rate2 =  self.function3[(x2,y2,action)]
         rate = min(rate1,rate2)
         return rate
 

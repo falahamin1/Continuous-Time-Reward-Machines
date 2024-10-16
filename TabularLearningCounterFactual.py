@@ -2,7 +2,7 @@ import numpy as np
 import math
 from collections import deque
 class DynamicQLearningCounterFactual:
-    def __init__(self, alpha=0.1, gamma=0.001, epsilon=1, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
+    def __init__(self, alpha=0.1, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
         self.q_table = {}
         self.alpha = alpha
         self.gamma = gamma
@@ -51,7 +51,7 @@ class DynamicQLearningCounterFactual:
                 a = self.pick_best_action(state, self.env.actions)
                 ctrm_state = state[-1]     #Get the CTRM state
                 env_state = state[:-1]      # Get the environment state
-                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state) # Gets the rate
+                rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state, a) # Gets the rate
                 next_states = self.env.next_state(env_state, a) # Gets the next state of the environment
                 for next_state, probability in next_states.items():
                         action_value = 0
@@ -157,6 +157,8 @@ class DynamicQLearningCounterFactual:
                 available_actions = self.env.actions
                 action = self.choose_action(env_state + (ctrm_state,), available_actions)
                 rate = self.ctrm.get_rate(env_state,action)
+                if rate is None:
+                    break
                 env_state1, sampled_time = self.env.step(action, rate)
                 reward = self.ctrm.transitionfunction(self.env.state) #transition in the ctrm which gives the new state and the reward
                 if reward is None:

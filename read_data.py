@@ -94,19 +94,19 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
     plt.fill_between(np.arange(counter_50.shape[0]) * 50, counter_25, counter_75, color='blue', alpha=0.3)
     
     # Now, add plots for each sampling size on the same figure
-    colors = ['green', 'purple', 'red', 'brown']  # Different colors for different sampling sizes
-    j = 0
-    for i, sampling_data in all_counter_sampling.items():
-        # Convert current sampling data to numpy array and calculate percentiles
-        sampling_data = np.array(sampling_data)
-        sampling_25 = np.percentile(sampling_data, 25, axis=0)
-        sampling_50 = np.median(sampling_data, axis=0)
-        sampling_75 = np.percentile(sampling_data, 75, axis=0)
+    # colors = ['green', 'purple', 'red', 'brown']  # Different colors for different sampling sizes
+    # j = 0
+    # for i, sampling_data in all_counter_sampling.items():
+    #     # Convert current sampling data to numpy array and calculate percentiles
+    #     sampling_data = np.array(sampling_data)
+    #     sampling_25 = np.percentile(sampling_data, 25, axis=0)
+    #     sampling_50 = np.median(sampling_data, axis=0)
+    #     sampling_75 = np.percentile(sampling_data, 75, axis=0)
 
-        # Plot for counterfactual sampling data with the sampling size in the legend
-        plt.plot(np.arange(sampling_50.shape[0]) * 50, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
-        plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
-        j += 1
+    #     # Plot for counterfactual sampling data with the sampling size in the legend
+    #     plt.plot(np.arange(sampling_50.shape[0]) * 50, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
+    #     plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
+    #     j += 1
 
     # Add labels and title
     plt.xlabel('Time Steps')
