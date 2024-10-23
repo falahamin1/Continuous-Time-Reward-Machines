@@ -10,6 +10,7 @@ class TreasureMapCTRM:
         self.function1 = self.generate_rates()
         self.function1 = {position: round(value * 0.04, 3) for position, value in self.function1.items()}
         self.function2 = {position: round(value * 5, 2) for position, value in self.function1.items()}
+        self.reward_mag = 1000
     
     def generate_rates(self):
         function1 = {
@@ -45,41 +46,41 @@ class TreasureMapCTRM:
         if self.state == 0: 
             if input_state[2] > 0: 
                 self.state = 1
-                return 0
+                return 0 * self.reward_mag
             else:
                 self.state = 0
-                return 0
+                return 0 * self.reward_mag
         elif self.state == 1: 
             if input_state[3] > 0: 
                 self.state = 2
-                return 0.4
+                return 0.4 * self.reward_mag
             elif input_state[4] > 0:
                 self.state = 3
-                return 0.2
+                return 0.2 * self.reward_mag
             else: 
-                return 0
+                return 0 * self.reward_mag
         elif self.state == 2: 
             if input_state[5] > 0: 
                 self.state = 5
-                return 0
+                return 0 * self.reward_mag
             else:
-                return 0
+                return 0* self.reward_mag
         elif self.state == 3: 
             if input_state[5]>0:
                 self.state = 4
-                return 0
+                return 0 * self.reward_mag
             else:
-                return 0
+                return 0 * self.reward_mag
         elif self.state ==4: 
             if input_state[6] > 0 : 
                 self.state = 6
-                return 1
+                return 1 * self.reward_mag
             else: 
-                return 0
+                return 0 * self.reward_mag
         elif self.state == 5:
             if input_state[6] > 0:
                 self.state = 6
-                return 1
+                return 1 * self.reward_mag
         elif self.state == 6: 
             return None
 
@@ -89,45 +90,45 @@ class TreasureMapCTRM:
         if ctrmstate == 0: 
             if input_state[2] > 0: 
                 next_state = 1
-                reward = 0
+                reward = 0 * self.reward_mag
             else:
                 next_state = 0
-                reward = 0
+                reward = 0 * self.reward_mag
         elif ctrmstate == 1: 
             if input_state[3] > 0: 
                 next_state = 2
-                reward = 0.4
+                reward = 0.4 * self.reward_mag
             elif input_state[4] > 0:
                 next_state = 3
-                reward = 0.2
+                reward = 0.2 * self.reward_mag
             else: 
                 next_state = 1
-                reward = 0
+                reward = 0 * self.reward_mag
         elif ctrmstate == 2: 
             if input_state[5] > 0: 
                 next_state = 5
-                reward = 0
+                reward = 0 * self.reward_mag
             else:
                 next_state = 2
-                reward = 0
+                reward = 0 * self.reward_mag
         elif ctrmstate == 3: 
             if input_state[5]>0:
                 next_state = 4
-                reward = 0
+                reward = 0 * self.reward_mag
             else:
                 next_state = 3
-                reward = 0
+                reward = 0 * self.reward_mag
         elif ctrmstate ==4: 
             if input_state[6] > 0 : 
                 next_state = 6
-                reward = 1
+                reward = 1 * self.reward_mag
             else: 
                 next_state = 4
-                reward = 0
+                reward = 0 * self.reward_mag
         elif ctrmstate == 5:
             if input_state[6] > 0:
                 next_state = 6
-                reward = 1
+                reward = 1 * self.reward_mag
         elif ctrmstate == 6: 
             next_state = None
             reward = None
