@@ -111,7 +111,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
     # Add labels and title
     plt.xlabel('Time Steps')
     plt.ylabel('Performance')
-    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on police officer example (tabular)')
+    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on firefighter example (tabular)')
     
     # Add a legend
     plt.legend()
@@ -123,7 +123,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
 
 
 # Path to the file you saved earlier
-datafile = 'copcar-server-tabular-data'
+datafile = 'firefighter-testing-data'
 
 # Open the file in binary read mode and load the data
 with open(datafile, 'rb') as f:
