@@ -87,6 +87,32 @@ class CopCarCTRM:
             return self.function2[(input_state[0], input_state[1], action)]
         else: 
             return None
+
+
+    def transition_VI(self,ctrmstate,next_state):
+        if ctrmstate == 0: 
+            if next_state == 1:                 
+                return 0
+            else:
+                return 0
+        elif ctrmstate == 1: 
+            if next_state == 2: 
+                return 1
+            else:
+                return 0
+        elif ctrmstate == 2: 
+            return None
+        
+
+    def next_states(self,ctrmstate):
+        next_states= []
+        if ctrmstate == 0: 
+            next_states.extend([0,1])
+        elif ctrmstate == 1: 
+            next_states.extend([1,2])
+        elif ctrmstate == 2: 
+            next_states = None
+        return next_states
     
 
 

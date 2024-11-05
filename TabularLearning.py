@@ -2,7 +2,7 @@ import numpy as np
 import math
 from collections import deque
 class DynamicQLearning:
-    def __init__(self, alpha=0.01, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
+    def __init__(self, alpha=0.01, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05, reward_shaping = False):
         self.q_table = {}
         self.alpha = alpha
         self.gamma = gamma
@@ -17,9 +17,12 @@ class DynamicQLearning:
         self.ctrm = ctrm
         # Information for checking the value of the strategy
         self.V = {}
+        self.ctrmV = {}
         self.states = self.fill_states()
         self.ctrm_states = tuple(self.ctrm.states)
+        self.reward_shaping = reward_shaping
         self.fill_vtable()
+        
 
     def fill_states(self):
         initial_state = self.env.initstate
@@ -39,6 +42,33 @@ class DynamicQLearning:
                 for ctrm_state in self.ctrm.states:  
                     s = state + (ctrm_state,)
                     self.V[s]= 0 
+        if self.reward_shaping:
+            for ctrm_state in self.ctrm_states:
+                self.ctrmV[ctrm_state] = 0 #for CTRM value iteration
+    
+    def ctrm_vi(self):
+        enable = True
+        initstate = self.ctrm.initstate # Initial state of the 
+        while enable:
+            delta = 0
+            for state in self.ctrmV: #Iterate through each state of the CTRM
+                v = self.ctrmV[state]  # Previous value
+                next_states = self.ctrm.next_states(state) #Get the next states
+                if next_states is not None: 
+                    for next_state in next_states: #Get the value of taking each next state
+                        action_value = 0 
+                        reward = self.ctrm.transition_VI(state, next_state) 
+                        if reward is not None:
+                                print(f"Reward is {reward}")
+                                value = reward + math.exp(-1 * self.gamma) *  self.ctrmV[next_state]
+                                action_value =max(value, action_value) #Take the action value
+                    self.ctrmV[state] = action_value
+                    delta = max(delta, abs(v - self.ctrmV[state]))
+            if delta < 0.01: 
+                    enable = False
+                    for state in self.ctrmV:
+                        print(f"Value of state {state} = {self.ctrmV[state]}")
+
 
                     
     def startegy_analaysis(self):
@@ -142,7 +172,10 @@ class DynamicQLearning:
                 reward = self.ctrm.transitionfunction(self.env.state) #transition in the ctrm which gives the new state and the reward
                 if reward is None:
                     break
+                
                 ctrm_state1 = self.ctrm.state # new ctrm state
+                if self.reward_shaping: 
+                    reward += self.getrewardshaping(ctrm_state,ctrm_state1,sampled_time)
                 previous_state = env_state + (ctrm_state,)
                 next_state = env_state1 + (ctrm_state1,)
                 self.update_q_table(previous_state, action, reward,sampled_time, next_state, self.env.actions)
@@ -159,11 +192,23 @@ class DynamicQLearning:
                 sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY)
             self.epsilon = max(self.epsilon*self.epsilon_decay, 0.01) # epsilon decay
         return self.evaluation_results
+
+    def getrewardshaping(self,ctrm_current,ctrm_next,time): #gets the reward shaping reward
+        if self.ctrmV[ctrm_current] is not None and self.ctrmV[ctrm_next] is not None:
+            reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+        else:
+            reward = 0
+        return reward
+        
+
     
     def trainwithconvergence(self, max_episode_length, value, threshold, max_episodes = 1000000):
+        # print("In train with converence")
         sum_perfomance = 0
         termination = 0
         episode = 0
+        if self.reward_shaping:
+            self.ctrm_vi()
         while termination == 0 and episode <= max_episodes:
         # while termination == 0:
             # if episode % 1000 == 0:
@@ -182,6 +227,8 @@ class DynamicQLearning:
                 if reward is None:
                     break
                 ctrm_state1 = self.ctrm.state # new ctrm state
+                if self.reward_shaping: 
+                    reward += self.getrewardshaping(ctrm_state,ctrm_state1,sampled_time)
                 previous_state = env_state + (ctrm_state,)
                 next_state = env_state1 + (ctrm_state1,)
                 self.update_q_table(previous_state, action, reward,sampled_time, next_state, self.env.actions)

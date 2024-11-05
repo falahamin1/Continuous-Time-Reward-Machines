@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from collections import deque
-class DynamicQLearning:
+class SARSA:
     def __init__(self, alpha=0.01, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05):
         self.q_table = {}
         self.alpha = alpha
@@ -19,7 +19,9 @@ class DynamicQLearning:
         self.V = {}
         self.states = self.fill_states()
         self.ctrm_states = tuple(self.ctrm.states)
+        self.ctrm_v = {}
         self.fill_vtable()
+        
 
     def fill_states(self):
         initial_state = self.env.initstate
@@ -39,6 +41,8 @@ class DynamicQLearning:
                 for ctrm_state in self.ctrm.states:  
                     s = state + (ctrm_state,)
                     self.V[s]= 0 
+        for ctrm_state in self.ctrm.states: 
+            self.ctrm_v[ctrm_state] = 0
 
                     
     def startegy_analaysis(self):
@@ -60,18 +64,6 @@ class DynamicQLearning:
                         if reward is not None and rate is not None:
                                 time = 1/rate
                                 action_value += (probability * (reward + math.exp(-1 * time * self.gamma) * self.V[next_state1])) 
-
-
-
-
-                # reward, ctrm_next = self.ctrm.transition_function_counterfactual(ctrm_state, next_state)
-                # next_state = next_state + (ctrm_next,)
-                # if reward is None or rate is None:
-                #     action_value = 0
-                # else:
-                #     time = 1/rate
-                #     action_value = (self.env.probability * (reward + math.exp(-1 * time * self.Gamma) * self.V[next_state])) 
-                #     + (1-self.env.probability) * math.exp(-1 * time * self.Gamma) *  self.V[state]
                 self.V[state] = action_value
                 delta = max(delta, abs(v - self.V[state]))
             if delta < 0.01: 

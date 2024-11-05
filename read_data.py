@@ -86,12 +86,12 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
     plt.figure(figsize=(10, 6))
     
     # Plot for classic data
-    plt.plot(np.arange(classic_50.shape[0]) * 5, classic_50, color='orange', label='Baseline')
-    plt.fill_between(np.arange(classic_50.shape[0]) * 5, classic_25, classic_75, color='orange', alpha=0.3)
+    plt.plot(np.arange(classic_50.shape[0]) * 50, classic_50, color='orange', label='Baseline')
+    plt.fill_between(np.arange(classic_50.shape[0]) * 50, classic_25, classic_75, color='orange', alpha=0.3)
     
     # Plot for counterfactual data
-    plt.plot(np.arange(counter_50.shape[0]) * 5, counter_50, color='blue', label='Counterfactual')
-    plt.fill_between(np.arange(counter_50.shape[0]) * 5, counter_25, counter_75, color='blue', alpha=0.3)
+    plt.plot(np.arange(counter_50.shape[0]) * 50, counter_50, color='blue', label='Counterfactual')
+    plt.fill_between(np.arange(counter_50.shape[0]) * 50, counter_25, counter_75, color='blue', alpha=0.3)
     
     # Now, add plots for each sampling size on the same figure
     colors = ['green', 'purple', 'red', 'brown']  # Different colors for different sampling sizes
@@ -104,14 +104,14 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
         sampling_75 = np.percentile(sampling_data, 75, axis=0)
 
         # Plot for counterfactual sampling data with the sampling size in the legend
-        plt.plot(np.arange(sampling_50.shape[0]) * 5, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
-        plt.fill_between(np.arange(sampling_50.shape[0]) * 5, sampling_25, sampling_75, color=colors[j], alpha=0.3)
+        plt.plot(np.arange(sampling_50.shape[0]) * 50, sampling_50, color=colors[j], label=f'Counterfactual with Sampling (size = {i})')
+        plt.fill_between(np.arange(sampling_50.shape[0]) * 50, sampling_25, sampling_75, color=colors[j], alpha=0.3)
         j += 1
 
     # Add labels and title
     plt.xlabel('Time Steps')
     plt.ylabel('Performance')
-    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on firefighter example (tabular)')
+    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on firefighter sync example (tabular)')
     
     # Add a legend
     plt.legend()
@@ -123,7 +123,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
 
 
 # Path to the file you saved earlier
-datafile = 'firefighter-testing-data'
+datafile = 'firefightersynch-tabular-server-data'
 
 # Open the file in binary read mode and load the data
 with open(datafile, 'rb') as f:

@@ -81,6 +81,8 @@ class TreasureMapCTRM:
             if input_state[6] > 0:
                 self.state = 6
                 return 1 * self.reward_mag
+            else:
+                return 0 * self.reward_mag
         elif self.state == 6: 
             return None
 
@@ -129,6 +131,10 @@ class TreasureMapCTRM:
             if input_state[6] > 0:
                 next_state = 6
                 reward = 1 * self.reward_mag
+            else:
+                next_state = 5
+                reward = 0 * self.reward_mag
+                
         elif ctrmstate == 6: 
             next_state = None
             reward = None
@@ -153,6 +159,60 @@ class TreasureMapCTRM:
         else:
             return self.function1[(input_state[0], input_state[1],action)]
     
+    def transition_VI(self,ctrmstate,next_state):
+        reward = None
+        next_state = None
+        if ctrmstate == 0: 
+            if next_state == 1: 
+                reward = 0 * self.reward_mag
+            else:
+                reward = 0 * self.reward_mag
+        elif ctrmstate == 1: 
+            if next_state == 2: 
+                reward = 0.4 * self.reward_mag
+            elif next_state == 3:
+                reward = 0.2 * self.reward_mag
+            else: 
+                reward = 0 * self.reward_mag
+        elif ctrmstate == 2: 
+            if next_state == 5: 
+                reward = 0 * self.reward_mag
+            else:
+                reward = 0 * self.reward_mag
+        elif ctrmstate == 3: 
+            if next_state == 4:
+                reward = 0 * self.reward_mag
+            else:
+                reward = 0 * self.reward_mag
+        elif ctrmstate ==4: 
+            if next_state == 6: 
+                reward = 1 * self.reward_mag
+            else: 
+                reward = 0 * self.reward_mag
+        elif ctrmstate == 5:
+            if next_state == 6:
+                reward = 1 * self.reward_mag
+        elif ctrmstate == 6: 
+            reward = None
+        return reward
+
+    def next_states(self,ctrmstate):
+        next_states= []
+        if ctrmstate == 0: 
+            next_states.extend([0,1])
+        elif ctrmstate == 1: 
+            next_states.extend([1,2,3])
+        elif ctrmstate == 2: 
+            next_states.extend([2,5])
+        elif ctrmstate == 3: 
+            next_states.extend([3,4])
+        elif ctrmstate ==4: 
+            next_states.extend([4,6])
+        elif ctrmstate == 5:
+            next_states.extend([5,6])
+        elif ctrmstate == 6: 
+            next_states = None
+        return next_states
 
 
     def reset(self):

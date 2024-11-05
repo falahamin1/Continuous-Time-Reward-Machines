@@ -2,7 +2,7 @@ import numpy as np
 import math
 from collections import deque
 class DynamicQLearningCounterFactualSampling:
-    def __init__(self, alpha=0.1, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05, sampling = 10):
+    def __init__(self, alpha=0.1, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05, sampling = 10, reward_shaping = False):
         self.q_table = {}
         self.alpha = alpha
         self.gamma = gamma
@@ -16,11 +16,14 @@ class DynamicQLearningCounterFactualSampling:
         self.env = environment
         self.ctrm = ctrm
         self.sampling = sampling
+        self.reward_shaping = reward_shaping
          # Information for checking the value of the strategy
         self.V = {}
+        self.ctrmV = {}
         self.states = self.fill_states()
         self.ctrm_states = tuple(self.ctrm.states)
         self.fill_vtable()
+        
 
     def fill_states(self):
         initial_state = self.env.initstate
@@ -40,6 +43,9 @@ class DynamicQLearningCounterFactualSampling:
                 for ctrm_state in self.ctrm.states:  
                     s = state + (ctrm_state,)
                     self.V[s]= 0 
+        if self.reward_shaping:
+            for ctrm_state in self.ctrm_states:
+                self.ctrmV[ctrm_state] = 0 #for CTRM value iteration
     
     def startegy_analaysis(self):
         enable = True
@@ -146,6 +152,8 @@ class DynamicQLearningCounterFactualSampling:
         sum_perfomance = 0
         termination = 0
         episode = 0
+        if self.reward_shaping:
+            self.ctrm_vi()
         while termination == 0 and episode <= max_episodes:
             
             # if episode % 1000 == 0:
@@ -227,10 +235,46 @@ class DynamicQLearningCounterFactualSampling:
                 avgtime = avgtime / self.sampling
                 if rate is not None:
                     reward, ctrm_nextstate = ctrm.transition_function_counterfactual(ctrmstate, next_state)
+                    
                     if reward  is not None and ctrm_nextstate is not None:
+
+                        if self.reward_shaping: 
+                            reward += self.getrewardshaping(ctrmstate,ctrm_nextstate,avgtime)
                         previous_state = state + (ctrmstate,)
                         next_state1 = next_state + (ctrm_nextstate,)
                         self.update_q_table(previous_state, action, reward, avgtime, next_state1, available_actions)
+
+    def ctrm_vi(self):
+        enable = True
+        initstate = self.ctrm.initstate # Initial state of the 
+        while enable:
+            delta = 0
+            for state in self.ctrmV: #Iterate through each state of the CTRM
+                v = self.ctrmV[state]  # Previous value
+                next_states = self.ctrm.next_states(state) #Get the next states
+                if next_states is not None: 
+                    for next_state in next_states: #Get the value of taking each next state
+                        action_value = 0 
+                        reward = self.ctrm.transition_VI(state, next_state) 
+                        if reward is not None:
+                                print(f"Reward is {reward}")
+                                value = reward + math.exp(-1 * self.gamma) *  self.ctrmV[next_state]
+                                action_value =max(value, action_value) #Take the action value
+                    self.ctrmV[state] = action_value
+                    delta = max(delta, abs(v - self.ctrmV[state]))
+            if delta < 0.01: 
+                    enable = False
+                    for state in self.ctrmV:
+                        print(f"Value of state {state} = {self.ctrmV[state]}")
+
+
+
+    def getrewardshaping(self,ctrm_current,ctrm_next,time): #gets the reward shaping reward
+        if self.ctrmV[ctrm_current] is not None and self.ctrmV[ctrm_next] is not None:
+            reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+        else:
+            reward = 0
+        return reward
 
 
 

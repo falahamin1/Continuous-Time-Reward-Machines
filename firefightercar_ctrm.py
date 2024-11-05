@@ -113,6 +113,39 @@ class FireFighterCarCTRM:
             else: 
                 return self.function3[(x2,y2,action)]
 
+    
+     
+    def transition_VI(self,ctrmstate,next_state):
+        if ctrmstate == 0: 
+            if next_state == 1: 
+                reward = 0
+                return reward
+            else: 
+                reward = 0
+                return reward
+
+        elif ctrmstate == 1: 
+            if next_state == 2: 
+                reward = 1
+                return reward
+            else:
+                reward = 0
+                return reward
+        else:
+            reward = None
+            return reward
+        
+
+    def next_states(self,ctrmstate):
+        next_states= []
+        if ctrmstate == 0: 
+            next_states.extend([0,1])
+        elif ctrmstate == 1: 
+            next_states.extend([1,2])
+        elif ctrmstate == 2: 
+            next_states = None
+        return next_states
+
 
     
 
