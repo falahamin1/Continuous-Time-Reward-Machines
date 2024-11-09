@@ -111,7 +111,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
     # Add labels and title
     plt.xlabel('Time Steps')
     plt.ylabel('Performance')
-    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on firefighter sync example (tabular)')
+    plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on treasure map example (tabular)')
     
     # Add a legend
     plt.legend()
@@ -123,7 +123,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling):
 
 
 # Path to the file you saved earlier
-datafile = 'firefightersynch-tabular-server-data'
+datafile = 'treasurehunt-server-tabular-data'
 
 # Open the file in binary read mode and load the data
 with open(datafile, 'rb') as f:
