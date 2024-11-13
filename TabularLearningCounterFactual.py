@@ -217,7 +217,7 @@ class DynamicQLearningCounterFactual:
                 time = 1/rate
                 if reward  is not None and ctrm_nextstate is not None:
                     if self.reward_shaping: 
-                        reward += self.getrewardshaping(ctrmstate,ctrm_nextstate,time)
+                        reward += self.getrewardshaping(ctrmstate,ctrm_nextstate,rate)
                     previous_state = state + (ctrmstate,)
                     next_state1 = next_state + (ctrm_nextstate,)
                     self.update_q_table(previous_state, action, reward, time, next_state1, available_actions)
@@ -235,22 +235,25 @@ class DynamicQLearningCounterFactual:
                         action_value = 0 
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
-                                value = reward + math.exp(-1 * self.gamma) *  self.ctrmV[next_state]
+                                value = reward + math.exp(-1 * self.gamma * 10) *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
                     delta = max(delta, abs(v - self.ctrmV[state]))
             if delta < 0.01: 
                     enable = False
                     for state in self.ctrmV:
+                        self.ctrmV[state] = -1 * self.ctrmV[state]
                         print(f"Value of state {state} = {self.ctrmV[state]}")
 
 
-    def getrewardshaping(self,ctrm_current,ctrm_next,time): #gets the reward shaping reward
+    def getrewardshaping(self,ctrm_current,ctrm_next,rate): #gets the reward shaping reward
         if self.ctrmV[ctrm_current] is not None and self.ctrmV[ctrm_next] is not None:
-            reward = (1/time)* (1/((1/time) + self.gamma)) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            # rate = round(1/time,5)
+            reward = (rate)* (1/(rate + self.gamma)) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
             # reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
         else:
             reward = 0
+        print(f"Reward from {ctrm_current} to {ctrm_next} is {reward}.")
         return reward
             
             
