@@ -271,7 +271,8 @@ class DynamicQLearningCounterFactualSampling:
 
     def getrewardshaping(self,ctrm_current,ctrm_next,time): #gets the reward shaping reward
         if self.ctrmV[ctrm_current] is not None and self.ctrmV[ctrm_next] is not None:
-            reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            reward = (1/time)* (1/((1/time) + self.gamma)) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            # reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
         else:
             reward = 0
         return reward
