@@ -23,6 +23,13 @@ class DynamicQLearningCounterFactualSampling:
         self.states = self.fill_states()
         self.ctrm_states = tuple(self.ctrm.states)
         self.fill_vtable()
+        self.fillctrmV()
+
+    def fillctrmV(self): 
+        if self.reward_shaping:
+            for ctrm_state in self.ctrm_states:
+                self.ctrmV[ctrm_state] = 0 #for CTRM value iteration
+        
         
 
     def fill_states(self):
@@ -43,9 +50,6 @@ class DynamicQLearningCounterFactualSampling:
                 for ctrm_state in self.ctrm.states:  
                     s = state + (ctrm_state,)
                     self.V[s]= 0 
-        if self.reward_shaping:
-            for ctrm_state in self.ctrm_states:
-                self.ctrmV[ctrm_state] = 0 #for CTRM value iteration
     
     def startegy_analaysis(self):
         enable = True
@@ -149,6 +153,7 @@ class DynamicQLearningCounterFactualSampling:
 
 
     def trainwithconvergence(self, max_episode_length, value, threshold, max_episodes = 100000):
+        print("Counter Sampling")
         sum_perfomance = 0
         termination = 0
         episode = 0
@@ -258,7 +263,7 @@ class DynamicQLearningCounterFactualSampling:
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
                                 # print(f"Reward is {reward}")
-                                value = reward + math.exp(-1 * self.gamma * 10) *  self.ctrmV[next_state]
+                                value = reward + math.exp(-1 * self.gamma ) *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
                     delta = max(delta, abs(v - self.ctrmV[state]))
@@ -266,19 +271,22 @@ class DynamicQLearningCounterFactualSampling:
                     enable = False
                     for state in self.ctrmV:
                         self.ctrmV[state] = -1 * self.ctrmV[state]
-                        print(f"Value of state {state} = {self.ctrmV[state]}")
+                        # print(f"Value of state {state} = {self.ctrmV[state]}")
 
 
 
     def getrewardshaping(self,ctrm_current,ctrm_next,time): #gets the reward shaping reward
         if self.ctrmV[ctrm_current] is not None and self.ctrmV[ctrm_next] is not None:
-            rate = round(1/time,5)
-            reward = (rate)* (1/(rate + self.gamma)) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
-            # reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            # rate = round(1/time,5)
+            # reward =  ((rate/(rate + self.gamma)) * self.ctrmV[ctrm_next]) - self.ctrmV[ctrm_current]
+            # if reward == 0:
+            #     print(f"Reward from {ctrm_current} to {ctrm_next} is {reward}.")
+            
+            reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
         else:
             reward = 0
         
-        print(f"Reward from {ctrm_current} to {ctrm_next} is {reward}.")
+        
         return reward
 
 

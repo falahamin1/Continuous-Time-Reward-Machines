@@ -22,6 +22,12 @@ class DynamicQLearning:
         self.ctrm_states = tuple(self.ctrm.states)
         self.reward_shaping = reward_shaping
         self.fill_vtable()
+        self.fillctrmV()
+
+    def fillctrmV(self): 
+        if self.reward_shaping:
+            for ctrm_state in self.ctrm_states:
+                self.ctrmV[ctrm_state] = 0 #for CTRM value iteration
         
 
     def fill_states(self):
@@ -42,9 +48,6 @@ class DynamicQLearning:
                 for ctrm_state in self.ctrm.states:  
                     s = state + (ctrm_state,)
                     self.V[s]= 0 
-        if self.reward_shaping:
-            for ctrm_state in self.ctrm_states:
-                self.ctrmV[ctrm_state] = 0 #for CTRM value iteration
     
     def ctrm_vi(self):
         enable = True
@@ -60,7 +63,7 @@ class DynamicQLearning:
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
                                 # print(f"Reward is {reward}")
-                                value = reward + math.exp(-1 * self.gamma * 10) *  self.ctrmV[next_state]
+                                value = reward + math.exp(-1 * self.gamma  ) *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
                     delta = max(delta, abs(v - self.ctrmV[state]))
@@ -194,20 +197,28 @@ class DynamicQLearning:
             self.epsilon = max(self.epsilon*self.epsilon_decay, 0.01) # epsilon decay
         return self.evaluation_results
 
-    def getrewardshaping(self,ctrm_current,ctrm_next,rate): #gets the reward shaping reward
+    def getrewardshaping(self,ctrm_current,ctrm_next,time): #gets the reward shaping reward
         if self.ctrmV[ctrm_current] is not None and self.ctrmV[ctrm_next] is not None:
+            reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
             # rate = round(1/time,5)
-            reward = (rate)* (1/(rate + self.gamma)) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
-            # reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            # reward =  ((rate/(rate + self.gamma)) * self.ctrmV[ctrm_next]) - self.ctrmV[ctrm_current]
+            # if ctrm_current == 1 and ctrm_next == 2: 
+            #     print(f"Value of state {ctrm_current} is {self.ctrmV[ctrm_current]} and value of {ctrm_next} is {self.ctrmV[ctrm_next]}")
+            #     print(f"Rate is {rate}")
+            #     print(f"Gamma is {self.gamma}")
+                # print(f"Reward from {ctrm_current} to {ctrm_next} is {reward}.")
+
+            
+            
         else:
             reward = 0
-        print(f"Reward from {ctrm_current} to {ctrm_next} is {reward}.")
+        
         return reward
         
 
     
     def trainwithconvergence(self, max_episode_length, value, threshold, max_episodes = 1000000):
-        # print("In train with converence")
+        print("In classic.")
         sum_perfomance = 0
         termination = 0
         episode = 0
