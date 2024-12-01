@@ -161,7 +161,6 @@ class TreasureMapCTRM:
     
     def transition_VI(self,ctrmstate,next_state):
         reward = None
-        next_state = None
         if ctrmstate == 0: 
             if next_state == 1: 
                 reward = 0 * self.reward_mag

@@ -54,6 +54,7 @@ class DynamicQLearning:
         initstate = self.ctrm.initstate # Initial state of the 
         while enable:
             delta = 0
+            print(f"The states are: {self.ctrmV} ")
             for state in self.ctrmV: #Iterate through each state of the CTRM
                 v = self.ctrmV[state]  # Previous value
                 next_states = self.ctrm.next_states(state) #Get the next states
@@ -62,7 +63,9 @@ class DynamicQLearning:
                     for next_state in next_states: #Get the value of taking each next state                        
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
-                                # print(f"Reward is {reward}")
+                                print(f"Reward from {state} to {next_state} is {reward}")
+                                # if reward > 0: 
+                                #     print(f"reward is {reward}")
                                 value = reward + math.exp(-1 * self.gamma  ) *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
