@@ -263,14 +263,14 @@ class DynamicQLearningCounterFactualSampling:
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
                                 # print(f"Reward is {reward}")
-                                value = reward + math.exp(-1 * self.gamma  ) *  self.ctrmV[next_state]
+                                value = reward + 0.7 *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
                     delta = max(delta, abs(v - self.ctrmV[state]))
             if delta < 0.01: 
                     enable = False
-                    for state in self.ctrmV:
-                        self.ctrmV[state] = -1 * self.ctrmV[state]
+                    # for state in self.ctrmV:
+                        # self.ctrmV[state] = -1 * self.ctrmV[state]
                         # print(f"Value of state {state} = {self.ctrmV[state]}")
 
 

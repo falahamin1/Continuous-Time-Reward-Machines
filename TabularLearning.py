@@ -54,7 +54,7 @@ class DynamicQLearning:
         initstate = self.ctrm.initstate # Initial state of the 
         while enable:
             delta = 0
-            print(f"The states are: {self.ctrmV} ")
+            # print(f"The states are: {self.ctrmV} ")
             for state in self.ctrmV: #Iterate through each state of the CTRM
                 v = self.ctrmV[state]  # Previous value
                 next_states = self.ctrm.next_states(state) #Get the next states
@@ -63,17 +63,17 @@ class DynamicQLearning:
                     for next_state in next_states: #Get the value of taking each next state                        
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
-                                print(f"Reward from {state} to {next_state} is {reward}")
+                                # print(f"Reward from {state} to {next_state} is {reward}")
                                 # if reward > 0: 
                                 #     print(f"reward is {reward}")
-                                value = reward + math.exp(-1 * self.gamma  ) *  self.ctrmV[next_state]
+                                value = reward + 0.7 *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
                     delta = max(delta, abs(v - self.ctrmV[state]))
             if delta < 0.01: 
                     enable = False
                     for state in self.ctrmV:
-                        self.ctrmV[state] = -1 * self.ctrmV[state]
+                        # self.ctrmV[state] = -1 * self.ctrmV[state]
                         print(f"Value of state {state} = {self.ctrmV[state]}")
                     
     def startegy_analaysis(self):
@@ -245,6 +245,8 @@ class DynamicQLearning:
                 ctrm_state1 = self.ctrm.state # new ctrm state
                 if self.reward_shaping: 
                     reward += self.getrewardshaping(ctrm_state,ctrm_state1,sampled_time)
+                if ctrm_state == 5:
+                    print(f"Reward from {ctrm_state} to {ctrm_state1} is {reward}")
                 previous_state = env_state + (ctrm_state,)
                 next_state = env_state1 + (ctrm_state1,)
                 self.update_q_table(previous_state, action, reward,sampled_time, next_state, self.env.actions)
@@ -254,9 +256,6 @@ class DynamicQLearning:
                 
             if (episode + 1) % self.UPDATE_FREQUENCY == 0:
                 sum_perfomance = self.get_average(sum_perfomance, (episode+1)/self.UPDATE_FREQUENCY, value)
-                # print(f"episode: {episode}, values given {self.evaluation_results[-1] / value}")
-                
-                # print("epsilon value:", self.epsilon)
                 if self.evaluation_results[-1]  > threshold:
                     termination = 1
                     break
