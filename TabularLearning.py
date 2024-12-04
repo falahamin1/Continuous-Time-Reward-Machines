@@ -245,8 +245,6 @@ class DynamicQLearning:
                 ctrm_state1 = self.ctrm.state # new ctrm state
                 if self.reward_shaping: 
                     reward += self.getrewardshaping(ctrm_state,ctrm_state1,sampled_time)
-                if ctrm_state == 5:
-                    print(f"Reward from {ctrm_state} to {ctrm_state1} is {reward}")
                 previous_state = env_state + (ctrm_state,)
                 next_state = env_state1 + (ctrm_state1,)
                 self.update_q_table(previous_state, action, reward,sampled_time, next_state, self.env.actions)
