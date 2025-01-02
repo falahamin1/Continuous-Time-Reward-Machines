@@ -64,7 +64,7 @@ class ValueIteration:
                         next_state1 = next_state + (ctrm_next,)
                         if reward is not None and rate is not None:
                                 time = 1/rate
-                                action_value += (probability * (reward + math.exp(-1 * time * self.gamma) * self.V[next_state1])) 
+                                action_value += (probability * (reward + rate/(self.gamma + rate) * self.V[next_state1])) 
                     if action_value >= max_value:
                         max_value = action_value
                 self.V[state] = max_value
