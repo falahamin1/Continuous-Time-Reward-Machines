@@ -86,7 +86,7 @@ class Comparison:
         return results
 
     def run_classic_tabular(self):
-        DRL =  DynamicQLearning(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
+        DRL =  DynamicQLearning(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 0.5, UPDATE_FREQUENCY= self.update_frequency,
         environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,reward_shaping= self.reward_shaping)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
@@ -99,7 +99,7 @@ class Comparison:
         return results
 # def trainwithconvergence(self, num_episodes, max_episode_length, value, threshold, max_episodes = 100000):
     def run_counterfactual_tabular(self):
-        DRL =  DynamicQLearningCounterFactual(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
+        DRL =  DynamicQLearningCounterFactual(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 0.5, UPDATE_FREQUENCY= self.update_frequency,
         environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,reward_shaping=self.reward_shaping)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
@@ -111,7 +111,7 @@ class Comparison:
         return results
 
     def run_counterfactual_sampling_tabular(self, sampling):
-        DRL =  DynamicQLearningCounterFactualSampling(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 1, UPDATE_FREQUENCY= self.update_frequency,
+        DRL =  DynamicQLearningCounterFactualSampling(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 0.5, UPDATE_FREQUENCY= self.update_frequency,
         environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,sampling= sampling,reward_shaping= self.reward_shaping)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
@@ -179,40 +179,6 @@ class Comparison:
         # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
                         sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_counter)
             self.save_plot(all_classic, all_counter,cf_sampling_data, self.save_file, self.rows)
-        
-        #     else: 
-        #     i = 3
-        #     self.rows = i
-        #     self.columns = i
-        #     self.ctrm, self.env_class = self.get_ctrm_env()
-        #     while i <= 7: 
-        #         all_classic = []
-        #         all_counter = []
-        #         length_classic = 0
-        #         length_counter = 0
-        #         for i in range(self.runs):
-        #             classic_data = self.run_classic()
-        #             counterfactual_data = self.run_counterfactual()
-        #             all_classic.append(classic_data)
-        #             all_counter.append(counterfactual_data)
-        #             length_classic = max(length_classic, len(classic_data))
-        #             length_counter = max(length_counter, len(counterfactual_data))
-                
-        #         for sub_array in all_classic:
-        #             if len(sub_array) < length_classic:
-        # # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-        #                 sub_array.extend([sub_array[-1]] * (length_classic - len(sub_array)) if sub_array else [0] * length_classic)
-        #         for sub_array in all_counter:
-        #             if len(sub_array) < length_counter:
-        # # Extend the sub-array to reach the desired length. Use the last element if available, or 0 if empty.
-        #                 sub_array.extend([sub_array[-1]] * (length_counter - len(sub_array)) if sub_array else [0] * length_classic)
-                
-        #         save_file = self.save_file + str(i)
-        #         self.save_plot(all_classic, all_counter, save_file, i)
-        #         i += 2
-
-
-
 
     def counterfactualsampling_tabular(self):
         sampling_size = [10,20,30]
