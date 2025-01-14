@@ -22,7 +22,7 @@ import pickle
 
 
 class Comparison:
-    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file,save_data,method,reward_shaping):
+    def __init__(self, env, specify_dimension, deep_rl, rows, columns, discount_factor, learning_rate, runs, threshold, max_episodes, episode_length, decay_rate, buffer_size, batch_size, update_frequency, save_file,save_data,method,reward_shaping, epsilon):
         self.env = env
         self.specify_dimension = specify_dimension
         self.deep_rl = deep_rl
@@ -44,6 +44,7 @@ class Comparison:
         self.value = None
         self.method = method
         self.reward_shaping = reward_shaping
+        self.epsilon = epsilon
 
 #From the input name of environment, this function returns the CTRM and the environment classes 
     def get_ctrm_env(self):
@@ -80,38 +81,38 @@ class Comparison:
         print(f"Deep Rl: {self.deep_rl}",flush=True)
     
     def run_classic(self):
-        DRL =  DeepRLClassic(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
+        DRL =  DeepRLClassic(capacity = self.buffer_size, epsilon = self.epsilon, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.episode_length , number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate)
         results = DRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes= self.max_episodes)
         return results
 
     def run_classic_tabular(self):
-        DRL =  DynamicQLearning(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 0.5, UPDATE_FREQUENCY= self.update_frequency,
+        DRL =  DynamicQLearning(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= self.epsilon, UPDATE_FREQUENCY= self.update_frequency,
         environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,reward_shaping= self.reward_shaping)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
 
 
     def run_counterfactual(self):
-        CFDRL = DeepRLCounterFactual(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
+        CFDRL = DeepRLCounterFactual(capacity = self.buffer_size, epsilon = self.epsilon, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.episode_length, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate)
         results = CFDRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes= self.max_episodes)
         return results
 # def trainwithconvergence(self, num_episodes, max_episode_length, value, threshold, max_episodes = 100000):
     def run_counterfactual_tabular(self):
-        DRL =  DynamicQLearningCounterFactual(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 0.5, UPDATE_FREQUENCY= self.update_frequency,
+        DRL =  DynamicQLearningCounterFactual(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= self.epsilon, UPDATE_FREQUENCY= self.update_frequency,
         environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,reward_shaping=self.reward_shaping)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
 
     def run_counterfactual_sampling(self, sampling):
-        CFDRL = DeepRLCounterFactualSampling(capacity = self.buffer_size, epsilon = 1, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
+        CFDRL = DeepRLCounterFactualSampling(capacity = self.buffer_size, epsilon = self.epsilon, Gamma= self.discount_factor, batchsize = self.batch_size, learnrate = self.learning_rate, 
     max_episode_length = self.episode_length, number_of_episodes = 5000, UPDATE_FREQUENCY = self.update_frequency, env = self.env_class, ctrm = self.ctrm, decay_rate = self.decay_rate, sampling= sampling)
         results = CFDRL.doRLwithconvergence(value= self.value, threshold= self.threshold, max_episodes = self.max_episodes)
         return results
 
     def run_counterfactual_sampling_tabular(self, sampling):
-        DRL =  DynamicQLearningCounterFactualSampling(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= 0.5, UPDATE_FREQUENCY= self.update_frequency,
+        DRL =  DynamicQLearningCounterFactualSampling(alpha=self.learning_rate, gamma= self.discount_factor, epsilon= self.epsilon, UPDATE_FREQUENCY= self.update_frequency,
         environment= self.env_class, ctrm= self.ctrm, decay_rate= self.decay_rate,sampling= sampling,reward_shaping= self.reward_shaping)
         results = DRL.trainwithconvergence(max_episode_length = self.episode_length, value = self.value, threshold = self.threshold, max_episodes = self.max_episodes)
         return results
@@ -311,6 +312,7 @@ def main():
     parser.add_argument("--save_data", type=str, default="default_data", help="filename of the saved data")
     parser.add_argument("--method", type=str, default="no", help="Only a spcific method (no, counterfactual, classic, counterfactual_sampling)")
     parser.add_argument("--reward_shaping", type=str, default="no", help="Is reward shaping required (yes,no)")
+    parser.add_argument("--epsilon", type=float, default=0.75, help="Initial Epsilon")
 
 
     args = parser.parse_args()
@@ -340,7 +342,8 @@ def main():
         save_file = args.save_file,
         save_data = args.save_data,
         method = args.method,
-        reward_shaping = reward_shaping
+        reward_shaping = reward_shaping,
+        epsilon = args.epsilon
     )
     # Display parameters
     comparison.display_parameters()

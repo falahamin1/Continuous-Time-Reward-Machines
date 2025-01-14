@@ -56,8 +56,12 @@ class ValueIteration:
                     ctrm_state = state[-1]     #Get the CTRM state
                     env_state = state[:-1]      # Get the environment state
                     rate = self.ctrm.get_rate_counterfactual(ctrm_state,env_state,a) # Gets the rate
-                    next_states = self.env.next_state(env_state, a) # Gets the next state of the environment
-                    
+                    if isinstance(rate, tuple): 
+                        next_states = self.env.next_state(env_state,a,rate)
+                        rate1, rate2 = rate 
+                        rate = rate1 + rate2 
+                    else:
+                        next_states = self.env.next_state(env_state, a) # Gets the next state of the environment                    
                     for next_state, probability in next_states.items():
                         action_value = 0
                         reward, ctrm_next = self.ctrm.transition_function_counterfactual(ctrm_state, next_state)
