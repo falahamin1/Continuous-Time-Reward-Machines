@@ -2,7 +2,7 @@ import numpy as np
 import math
 from collections import deque
 class DynamicQLearningCounterFactualSampling:
-    def __init__(self, alpha=0.1, gamma=0.001, epsilon=0.5, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05, sampling = 10, reward_shaping = False):
+    def __init__(self, alpha=0.1, gamma=0.001, epsilon=0.1, UPDATE_FREQUENCY = 50, environment = None, ctrm = None, decay_rate = 0.05, sampling = 10, reward_shaping = False):
         self.q_table = {}
         self.alpha = alpha
         self.gamma = gamma
@@ -69,7 +69,7 @@ class DynamicQLearningCounterFactualSampling:
                         next_state1 = next_state + (ctrm_next,)
                         if reward is not None and rate is not None:
                                 time = 1/rate
-                                action_value += (probability * (reward + math.exp(-1 * time * self.gamma) * self.V[next_state1])) 
+                                action_value += (probability * (reward + rate/(self.gamma + rate)  * self.V[next_state1])) 
                     
                 self.V[state] = action_value
                 delta = max(delta, abs(v - self.V[state]))
@@ -115,7 +115,9 @@ class DynamicQLearningCounterFactualSampling:
         current_q_value = self.get_q_value(state, action, available_actions= available_actions)
 
         # Q-learning formula
-        new_q_value = current_q_value + self.alpha * (reward + math.exp(-1 * self.gamma * sampled_time)  * next_best_action_q_value - current_q_value)
+        rate = 1/sampled_time
+        # new_q_value = current_q_value + self.alpha * (reward + math.exp(-1 * self.gamma * sampled_time)  * next_best_action_q_value - current_q_value)
+        new_q_value = current_q_value + self.alpha * (reward + rate/(rate + self.gamma)  * next_best_action_q_value - current_q_value)
         self.q_table[state][action] = new_q_value
 
     def train(self, num_episodes, max_episode_length):
@@ -282,7 +284,9 @@ class DynamicQLearningCounterFactualSampling:
             # if reward == 0:
             #     print(f"Reward from {ctrm_current} to {ctrm_next} is {reward}.")
             
-            reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            # reward = math.exp(-1 * self.gamma * time) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
+            rate = 1/time
+            reward = rate/(rate + self.gamma) * self.ctrmV[ctrm_next] - self.ctrmV[ctrm_current]
         else:
             reward = 0
         

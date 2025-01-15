@@ -8,9 +8,9 @@ class TreasureMapCTRM:
         self.initstate = 0 #initial state
         self.state = self.initstate
         self.function1 = self.generate_rates()
-        self.function1 = {position: round(value * 10, 3) for position, value in self.function1.items()}
+        self.function1 = {position: round(value * 0.2, 5) for position, value in self.function1.items()}
         # self.function1 = {position: round(value * 0.04, 3) for position, value in self.function1.items()}
-        self.function2 = {position: round(value * 5, 2) for position, value in self.function1.items()}
+        self.function2 = {position: round(value * 10, 2) for position, value in self.function1.items()}
         self.reward_mag = 1
     
     def generate_rates(self):
@@ -192,6 +192,8 @@ class TreasureMapCTRM:
         elif ctrmstate == 5:
             if next_state == 6:
                 reward = 1 * self.reward_mag
+            else: 
+                reward = 0 * self.reward_mag
         elif ctrmstate == 6: 
             reward = None
         return reward
