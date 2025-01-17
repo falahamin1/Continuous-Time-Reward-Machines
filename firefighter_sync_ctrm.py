@@ -9,7 +9,7 @@ class FireFighterCarSynchCTRM:
         self.finalstate = 2
         self.state = self.initstate
         self.function1 = self.generate_rates()
-        self.function1 = {position: round(value * 0.03, 4) for position, value in self.function1.items()}
+        self.function1 = {position: round(value * 3, 4) for position, value in self.function1.items()}
         self.function2 = {position: round(value * 10, 4) for position, value in self.function1.items()}
         self.function3 = {position: round(value * 5, 3) for position, value in self.function1.items()}
         # print("New reward machine")

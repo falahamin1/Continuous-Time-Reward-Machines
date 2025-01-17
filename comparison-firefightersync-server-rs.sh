@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --time=5:00:00                # Adjust the time as needed (e.g., 2 hours)
-#SBATCH --partition=amilan            # Set the partition to aa100
+#SBATCH --time=13:00:00                # Adjust the time as needed (e.g., 2 hours)
+#SBATCH --partition=amilan              # Set the partition to amilan
 #SBATCH --ntasks=1                     # Number of tasks (usually 1 for Python scripts)
 #SBATCH --cpus-per-task=1           # Number of CPU cores for the task
 #SBATCH --mem=20G                      # Request 20GB of CPU memory
@@ -17,5 +17,5 @@ module load anaconda
 conda activate amfa-custom-env
 
 # Run the Python script with the given arguments
-python3 Comparison.py --env cop-car --specify_dimension yes --rows 9 --columns 9 --runs 10 --threshold 0.9 --max_episodes 1000 --episode_len 500 --discount_factor 0.01 --save_file copcar-server-tabular --buffer_size 50000 --save_data copcar-server-tabular-data --deep_rl no --update_frequency 1
+python3 Comparison.py --env firefighter-synch --reward_shaping yes --specify_dimension yes --rows 7 --columns 7 --runs 10 --threshold 0.8 --max_episodes 10000 --update_frequency 10 --discount_factor 0.01 --episode_len 1000 --learning_rate 0.2 --save_file firefightersync-tabular-server-rs --buffer_size 75000  --save_data firefightersync-tabular-server-data-rs --deep_rl no --epsilon 0.8
 
