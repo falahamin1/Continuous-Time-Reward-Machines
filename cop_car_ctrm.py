@@ -2,7 +2,7 @@ import numpy as np
 
 class CopCarCTRM:
     def __init__(self):
-        self.states = [0,1,2]
+        self.states = [0,1,2,3]
         self.actions = [0,1,2,3]
         self.totalstates = 3
         self.initstate = 0 #initial state
@@ -54,11 +54,19 @@ class CopCarCTRM:
         elif self.state == 1: 
             if input_state[3] > 0: 
                 self.state = 2
-                return 1
+                return 0
             else:
                 self.state = 1
                 return 0
+
         elif self.state == 2: 
+            if input_state[4] > 0: 
+                self.state = 3
+                return 1
+            else:
+                self.state = 2
+                return 0
+        elif self.state == 3: 
             return None
 
     def transition_function_counterfactual(self, ctrmstate, input_state):
@@ -72,24 +80,32 @@ class CopCarCTRM:
         elif ctrmstate == 1: 
             if input_state[3] > 0: 
                 next_state = 2
-                return 1, next_state
+                return 0, next_state
             else:
                 next_state = 1
                 return 0, next_state
+
         elif ctrmstate == 2: 
+            if input_state[4] > 0: 
+                next_state = 3
+                return 1, next_state
+            else:
+                next_state = 2
+                return 0, next_state
+        elif ctrmstate == 3: 
             return None, None
 
 
     def get_rate_counterfactual(self,ctrmstate, input_state, action):
         state = (input_state[0], input_state[1], action)
-        if ctrmstate == 0:
+        if ctrmstate == 0 or ctrmstate == 2:
             return self.function1[state]
         elif ctrmstate == 1: 
             return self.function2[state]
 
     def get_rate(self,input_state, action):
         # print("Input state is:", input_state)
-        if self.state == 0:
+        if self.state == 0 or self.state== 2:
             return self.function1[(input_state[0], input_state[1], action)]
         elif self.state == 1: 
             return self.function2[(input_state[0], input_state[1], action)]
@@ -105,10 +121,15 @@ class CopCarCTRM:
                 return 0
         elif ctrmstate == 1: 
             if next_state == 2: 
-                return 1
+                return 0
             else:
                 return 0
         elif ctrmstate == 2: 
+            if next_state == 3: 
+                return 1
+            else:
+                return 0
+        elif ctrmstate == 3: 
             return None
         
 
@@ -119,6 +140,8 @@ class CopCarCTRM:
         elif ctrmstate == 1: 
             next_states.extend([1,2])
         elif ctrmstate == 2: 
+            next_states.extend([2,3])
+        elif ctrmstate == 3: 
             next_states = None
         return next_states
     
