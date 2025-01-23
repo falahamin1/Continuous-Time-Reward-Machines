@@ -1,6 +1,6 @@
 import numpy as np
 
-class FireFighterCarCTRM:
+class FireFighterMultCTRM:
     def __init__(self):
         self.states = [0,1,2]
         self.actions = [0,1,2,3]

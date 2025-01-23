@@ -15,6 +15,8 @@ from CounterFactualDRLSampling import DeepRLCounterFactualSampling
 from TabularCounterSampling import DynamicQLearningCounterFactualSampling
 from TabularLearning import DynamicQLearning
 from TabularLearningCounterFactual import DynamicQLearningCounterFactual
+from firefightermultiple import FireFighterMultEnv
+from firefightermultiple_ctrm import FireFighterMultCTRM
 import time 
 import argparse
 from TabularLearning import DynamicQLearning
@@ -49,8 +51,10 @@ class Comparison:
 #From the input name of environment, this function returns the CTRM and the environment classes 
     def get_ctrm_env(self):
         if self.env == "firefighter-car":
-            ctrm = FireFighterCarCTRM()
-            env = FireFighterCarEnv(self.rows, self.columns, probability= 0.95)
+            # ctrm = FireFighterCarCTRM()
+            # env = FireFighterCarEnv(self.rows, self.columns, probability= 0.95)
+            ctrm  = FireFighterMultCTRM()
+            env = FireFighterMultEnv(self.rows, self.columns, probability= 0.95, num_targets= 5)
         elif self.env == "treasure-map":
             ctrm = TreasureMapCTRM()
             env = TreasureMapEnv(probability= 0.9)
