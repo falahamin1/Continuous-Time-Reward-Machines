@@ -42,7 +42,7 @@ class FireFighterMultCTRM:
     
     def transitionfunction(self, input_state): #Takes the transition in the reward machine and gives the reward
         if self.state == 0: 
-            if self.check_targets(): #checks if player 1 has reached the target
+            if self.check_targets(input_state): #checks if player 1 has reached the target
                 self.state = 1
                 return 0
             else: 
@@ -63,7 +63,7 @@ class FireFighterMultCTRM:
     def transition_function_counterfactual(self, ctrmstate, input_state):
 
         if ctrmstate == 0: 
-            if self.check_targets():
+            if self.check_targets(input_state):
                 next_state = 1
                 reward = 0
                 return reward, next_state

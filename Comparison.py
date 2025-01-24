@@ -54,7 +54,7 @@ class Comparison:
             # ctrm = FireFighterCarCTRM()
             # env = FireFighterCarEnv(self.rows, self.columns, probability= 0.95)
             ctrm  = FireFighterMultCTRM()
-            env = FireFighterMultEnv(self.rows, self.columns, probability= 0.95, num_targets= 5)
+            env = FireFighterMultEnv(self.rows, self.columns, probability= 0.95)
         elif self.env == "treasure-map":
             ctrm = TreasureMapCTRM()
             env = TreasureMapEnv(probability= 0.9)
