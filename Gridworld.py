@@ -24,7 +24,7 @@ class Gridworld:
     # gridworld
     def step(self, state, action, rate):
         x, y = state
-        timetaken = np.random.exponential(scale= 1/rate)
+        timetaken = np.random.exponential(scale= 1/rate) #sampling time taken from an exponential distribution
         if np.random.rand() >= (1 - self.prob): # probability of taking the action
             if action == 0:
                 movement = self.directions['N']

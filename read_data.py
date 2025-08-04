@@ -97,7 +97,7 @@ def save_plot(all_classic, all_counter, all_counter_sampling, all_classic1, all_
     counter_751 = np.percentile(all_counter1, 75, axis=0)
     
     # Create a plot
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(10, 8))
     
     # Plot for classic data
     plt.plot(np.arange(classic_50.shape[0]) * 10, classic_50, color='#90EE90', label='Baseline')
@@ -148,14 +148,18 @@ def save_plot(all_classic, all_counter, all_counter_sampling, all_classic1, all_
         j += 1
 
     # Add labels and title
-    plt.xlabel('Time Steps', fontsize=14, fontweight='bold')
-    plt.ylabel('Performance', fontsize=14, fontweight='bold')
+    # Set x-axis ticks to have a gap of 5000
+    plt.xticks(np.arange(0, classic_50.shape[0] * 10 + 1, 2000), fontsize=16, fontweight='bold')
+
+    plt.yticks(fontsize=20, fontweight='bold')
+    plt.xlabel('Episodes', fontsize=21, fontweight='bold')
+    plt.ylabel('Performance', fontsize=21   , fontweight='bold')
 
     # plt.title('Comparison of Classic, Counterfactual, and Counterfactual with Sampling on treasure map example')
     
     # Add a legend
     # plt.legend()
-
+    # plt.xlim([0, 20000])
     plt.show()
     
     # Close the plot to free memory
@@ -177,14 +181,14 @@ def save_legend():
         ]
 
         # Create a blank figure for the legend
-        fig_leg = plt.figure(figsize=(10, 1))  # Adjust width to fit horizontally
+        fig_leg = plt.figure(figsize=(40, 2))  # Adjust width to fit horizontally
         legend = fig_leg.legend(
             handles, 
             [h.get_label() for h in handles], 
             loc='center', 
             ncol=len(handles), 
             frameon=False,
-            prop={'weight': 'bold', 'size': 12}  # Bold font with increased size
+            prop={'weight': 'bold', 'size': 25}  # Bold font with increased size
         )
 
         # Remove axes
@@ -207,21 +211,26 @@ def save_legend():
 
 
 
-# Path to the file you saved earlier
+# # Path to the file you saved earlier
 # datafile = 'treasurehunt-server-tabular-data'
 # datafile1 = 'treasurehunt-server-tabular-data-rs'
 
-# datafile = 'copcar-server-tabular-data'
-# datafile1 = 'copcar-server-tabular-data-rs'
+datafile = 'copcar-server-tabular-data'
+datafile1 = 'copcar-server-tabular-data-rs'
 
 # datafile = 'firefighter-tabular-server-data'
 # datafile1 = 'firefighter-tabular-server-data-rs'
 
-datafile = 'firefightersync-tabular-server-data'
-datafile1 = 'firefightersync-tabular-server-data-rs'
+# datafile = 'firefightersync-tabular-server-data'
+# datafile1 = 'firefightersync-tabular-server-data-rs'
 
 # datafile = 'treasurehunt-server-tabular-data-large'
 # datafile1 = 'treasurehunt-server-tabular-data-rs-large'
+
+# datafile = 'treasurehunt-server-tabular-data-large'
+# datafile1 = 'treasurehunt-server-tabular-data-rs-large'
+
+
 
 
 # Open the file in binary read mode and load the data
@@ -244,5 +253,5 @@ all_counter_sampling1 = loaded_data1['all_counter_sampling']
 print("Classic Data:", all_classic)
 print("Counter Data:", all_counter)
 print("Counter Sampling Data:", all_counter_sampling)
-# save_plot(all_classic=all_classic, all_counter= all_counter, all_counter_sampling= all_counter_sampling, all_classic1= all_classic1, all_counter1= all_counter1, all_counter_sampling1= all_counter_sampling1)
-save_legend()
+save_plot(all_classic=all_classic, all_counter= all_counter, all_counter_sampling= all_counter_sampling, all_classic1= all_classic1, all_counter1= all_counter1, all_counter_sampling1= all_counter_sampling1)
+# save_legend()

@@ -63,9 +63,6 @@ class DynamicQLearning:
                     for next_state in next_states: #Get the value of taking each next state                        
                         reward = self.ctrm.transition_VI(state, next_state) 
                         if reward is not None:
-                                # print(f"Reward from {state} to {next_state} is {reward}")
-                                # if reward > 0: 
-                                #     print(f"reward is {reward}")
                                 value = reward + 0.7 *  self.ctrmV[next_state]
                                 action_value =max(value, action_value) #Take the action value
                     self.ctrmV[state] = action_value
@@ -73,7 +70,6 @@ class DynamicQLearning:
             if delta < 0.01: 
                     enable = False
                     for state in self.ctrmV:
-                        # self.ctrmV[state] = -1 * self.ctrmV[state]
                         print(f"Value of state {state} = {self.ctrmV[state]}")
                     
     def startegy_analaysis(self):
@@ -95,18 +91,6 @@ class DynamicQLearning:
                         if reward is not None and rate is not None:
                                 time = 1/rate
                                 action_value += (probability * (reward + rate/(self.gamma +rate) * self.V[next_state1])) 
-
-
-
-
-                # reward, ctrm_next = self.ctrm.transition_function_counterfactual(ctrm_state, next_state)
-                # next_state = next_state + (ctrm_next,)
-                # if reward is None or rate is None:
-                #     action_value = 0
-                # else:
-                #     time = 1/rate
-                #     action_value = (self.env.probability * (reward + math.exp(-1 * time * self.Gamma) * self.V[next_state])) 
-                #     + (1-self.env.probability) * math.exp(-1 * time * self.Gamma) *  self.V[state]
                 self.V[state] = action_value
                 delta = max(delta, abs(v - self.V[state]))
             if delta < 0.01: 
@@ -120,16 +104,14 @@ class DynamicQLearning:
         for act in available_actions:
             if act not in self.q_table[state]:
                 self.q_table[state][act] = 0
-        # if action not in self.q_table[state]:
-        #     self.q_table[state][action] = 0  # Initialize unseen state-action pairs to 0
         return self.q_table[state][action]
 
 
     def choose_action(self, state, available_actions):
-        if np.random.rand() < self.epsilon:
+        if np.random.rand() < self.epsilon: #exploration
             return np.random.choice(available_actions)  # Random action
-        else:
-            current_actions = self.q_table.get(state, {})
+        else:   #exploitation                              
+            current_actions = self.q_table.get(state, {}) 
             if not current_actions:  # If no actions for this state, choose randomly
                 return np.random.choice(available_actions)
                 
@@ -159,21 +141,20 @@ class DynamicQLearning:
 
     def train(self, num_episodes, max_episode_length):
         sum_perfomance = 0
+        #Q-learning algorithm
         for episode in range(num_episodes):
             if episode% 10000 == 0:
                 print("Episode:", episode)
             
             env_state = self.env.reset()
             ctrm_state = self.ctrm.reset()
-            # print("state of the environment:", env.state)
-            # print("State of the ctrm:", ctrm.state)
-            rate = self.ctrm.get_rate(env_state)
+            rate = self.ctrm.get_rate(env_state) # Gets the rate of the state of the environment from the CTRM
             for i in range(max_episode_length):
                 if rate is None:
                     break
-                available_actions = self.env.actions
-                action = self.choose_action(env_state + (ctrm_state,), available_actions)
-                env_state1, sampled_time = self.env.step(action, rate)
+                available_actions = self.env.actions 
+                action = self.choose_action(env_state + (ctrm_state,), available_actions) #Action from q-table
+                env_state1, sampled_time = self.env.step(action, rate) #env_state1: next_state of the environment, sampled_time: time taken to transition
                 # sampled_time = 1/rate
                 reward = self.ctrm.transitionfunction(self.env.state) #transition in the ctrm which gives the new state and the reward
                 if reward is None:
@@ -229,7 +210,7 @@ class DynamicQLearning:
         while termination == 0 and episode <= max_episodes:
         # while termination == 0:
             # if episode % 1000 == 0:
-                # print("Episode:", episode)
+                # print("Episode:", episode) 
             env_state = self.env.reset()
             ctrm_state = self.ctrm.reset()
             for i in range(max_episode_length):
@@ -305,4 +286,13 @@ class DynamicQLearning:
         self.env.reset()
         self.ctrm.reset()
         return self.startegy_analaysis()
-        
+    
+    #Additional inputs: Time bound as input (T): From user, do RL for this amount of time [0,T] 
+    #Additional inputs: accuracy as input from user
+    # Find max rate: From the CTRM get max rate  (max_rate)
+    # discretization_fact = 2.T/ max_rate (formula from the paper)
+    # Discounted reward objective -> Time bounded  objective
+    # sampled_time = upper_bound(sampled_time/ disc_factor) 
+    # Q-table: (env_state, ctrm_state) _> Q-value for each action 
+                #(env_state, ctrm_state, step{0, T/disc_fact})  
+    
